@@ -1,5 +1,9 @@
 # Pai
-## Calendar view library for iOS.
+
+[![BuddyBuild](https://dashboard.buddybuild.com/api/statusImage?appID=5a3bc4bd2736ea00014a8b80&branch=master&build=latest)](https://dashboard.buddybuild.com/apps/5a3bc4bd2736ea00014a8b80/build/latest?branch=master)
+[![Build Status](https://travis-ci.org/lkmfz/Pai.svg?branch=master)](https://travis-ci.org/lkmfz/Pai)
+[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Pai.svg)](https://cocoapods.org/pods/Pai)
+[![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 <a href="https://swift.org">
  <img src="https://img.shields.io/badge/Swift-4-orange.svg"
