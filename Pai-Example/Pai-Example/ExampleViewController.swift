@@ -7,10 +7,28 @@
 //
 
 import UIKit
+import Pai
 
 final class ExampleViewController: UIViewController {
 
+    private lazy var monthlyView: MonthlyCollectionView = {
+        let view = MonthlyCollectionView()
+        return view
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        view.addSubview(monthlyView)
+
+        NSLayoutConstraint.activate([
+            monthlyView.topAnchor.constraint(equalTo: view.topAnchor),
+            monthlyView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            monthlyView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            monthlyView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
     }
 }
