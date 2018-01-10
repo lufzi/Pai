@@ -1,5 +1,5 @@
 //
-//  MonthlyViewCell.swift
+//  MonthViewCell.swift
 //  Pai
 //
 //  Created by Luqman Fauzi on 26/12/2017.
@@ -8,26 +8,28 @@
 
 import UIKit
 
-internal class MonthlyViewCell: UICollectionViewCell {
+internal class MonthViewCell: UICollectionViewCell {
 
-    private lazy var dailyCollectionView: DailyCollectionView = {
-        let collectionView = DailyCollectionView()
+    private lazy var dayCollectionView: DayCollectionView = {
+        let collectionView = DayCollectionView()
         return collectionView
     }()
 
     private var calendar = PaiCalendar.current
     private var weeksOfMonthCount: Int {
-        return calendar.weeksOfMonths
+        return calendar.veryShortWeekdaySymbols.count
     }
 
     private lazy var weekdaySymbolLabels: [UILabel] = {
         var labels: [UILabel] = []
         for symbol in calendar.veryShortWeekdaySymbols {
             let label = UILabel()
+            label.font = PaiStyle.shared.dateItemSymbolFont
+            label.textColor = PaiStyle.shared.dateItemSymbolTextColor
+            label.backgroundColor = PaiStyle.shared.dateItemBackgroundColor
+            label.textAlignment = .center
             label.translatesAutoresizingMaskIntoConstraints = false
             label.isUserInteractionEnabled = true
-            label.font = UIFont.systemFont(ofSize: 17.0, weight: .bold)
-            label.textAlignment = .center
             label.text = symbol
             labels.append(label)
         }
@@ -46,10 +48,14 @@ internal class MonthlyViewCell: UICollectionViewCell {
             addSubview(label)
         }
 
-        dailyCollectionView.frame = UIEdgeInsetsInsetRect(
+        dayCollectionView.frame = UIEdgeInsetsInsetRect(
             bounds,
             UIEdgeInsets(top: weekdaySymbolHeight, left: 0, bottom: 0, right: 0)
         )
-        addSubview(dailyCollectionView)
+        addSubview(dayCollectionView)
+    }
+
+    func configure(monthIndex: Int) {
+        dayCollectionView.month = Month(rawValue: monthIndex) ?? .jan
     }
 }

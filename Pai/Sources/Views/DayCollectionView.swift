@@ -1,5 +1,5 @@
 //
-//  DailyCollectionView.swift
+//  DayCollectionView.swift
 //  Pai
 //
 //  Created by Luqman Fauzi on 27/12/2017.
@@ -8,22 +8,24 @@
 
 import Foundation
 
-internal class DailyCollectionView: UICollectionView {
+internal class DayCollectionView: UICollectionView {
 
     let calendar = PaiCalendar.current
-
-    var dateSymbols: [String] {
-        var dates: [Int] = []
-        for number in 1...30 {
-            dates.append(number)
+    var month: Month = .jan {
+        didSet {
+            dates = calendar.datesCountInMonth(inMonth: month)
         }
-        return dates.map({ $0.description })
+    }
+    var dates: [PaiDate] = [] {
+        didSet {
+            reloadData()
+        }
     }
 
     public init() {
-        let layout = DailyViewFlowLayout()
+        let layout = DayFlowLayout()
         super.init(frame: .zero, collectionViewLayout: layout)
-        register(cellWithClass: DailyViewCell.self)
+        register(cellWithClass: DayViewCell.self)
         backgroundColor = UIColor.white
         translatesAutoresizingMaskIntoConstraints = false
         delegate = self
@@ -35,20 +37,26 @@ internal class DailyCollectionView: UICollectionView {
     }
 }
 
-extension DailyCollectionView: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
     // MARK: - UICollectionViewDataSource
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dateSymbols.count
+        return dates.count
     }
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withClass: DailyViewCell.self, for: indexPath) else {
+        guard let cell = collectionView.dequeueReusableCell(withClass: DayViewCell.self, for: indexPath) else {
             fatalError("DayViewCell not found.")
         }
-        let daySymbol = dateSymbols[indexPath.item]
-        cell.configure(dateSymbol: daySymbol)
+        let date = dates[indexPath.item].date
+        if let beginning = calendar.indexStartDate(inMonth: month), indexPath.item < beginning {
+            cell.configure(date: date, style: .excluded)
+        } else if let end = calendar.indexEndDate(inMonth: month), indexPath.item > end {
+            cell.configure(date: date, style: .excluded)
+        } else {
+            cell.configure(date: date, style: .normal)
+        }
         return cell
     }
 
@@ -61,7 +69,7 @@ extension DailyCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
     // MARK: - UICollectionViewDelegateFlowLayout
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let itemWidth: CGFloat = collectionView.bounds.width / CGFloat(calendar.weekdaySymbols.count)
+        let itemWidth: CGFloat = collectionView.bounds.width / CGFloat(calendar.veryShortWeekdaySymbols.count)
         return CGSize(width: itemWidth, height: itemWidth)
     }
 }

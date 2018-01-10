@@ -1,5 +1,5 @@
 //
-//  DailyViewFlowLayout.swift
+//  DayFlowLayout.swift
 //  Pai
 //
 //  Created by Luqman Fauzi on 27/12/2017.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class DailyViewFlowLayout: UICollectionViewFlowLayout {
+internal class DayFlowLayout: UICollectionViewFlowLayout {
 
     override init() {
         super.init()

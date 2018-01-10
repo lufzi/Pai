@@ -11,8 +11,13 @@ import Pai
 
 final class ExampleViewController: UIViewController {
 
-    private lazy var monthlyView: MonthlyCollectionView = {
-        let view = MonthlyCollectionView()
+    private var style: PaiStyle = {
+        let style = PaiStyle.shared
+        return style
+    }()
+
+    private lazy var monthlyView: MonthCollectionView = {
+        let view = MonthCollectionView(style: self.style)
         return view
     }()
 
