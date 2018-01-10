@@ -49,13 +49,20 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
         guard let cell = collectionView.dequeueReusableCell(withClass: DayViewCell.self, for: indexPath) else {
             fatalError("DayViewCell not found.")
         }
-        let date = dates[indexPath.item].date
+
+        let item = dates[indexPath.item]
+
+        /// Configure date item cell by the 3 defined `DateItemStyle` values
         if let beginning = calendar.indexStartDate(inMonth: month), indexPath.item < beginning {
-            cell.configure(date: date, style: .excluded)
+            cell.configure(date: item.date, style: .offsetDate)
         } else if let end = calendar.indexEndDate(inMonth: month), indexPath.item > end {
-            cell.configure(date: date, style: .excluded)
+            cell.configure(date: item.date, style: .offsetDate)
         } else {
-            cell.configure(date: date, style: .normal)
+            if item.isPastDate {
+                cell.configure(date: item.date, style: .pastDate)
+            } else {
+                cell.configure(date: item.date, style: .active)
+            }
         }
         return cell
     }
@@ -63,7 +70,8 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
     // MARK: - UICollectionViewDelegate
 
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("Selected day: \(indexPath.item)")
+        let item = dates[indexPath.item + 1]
+        print("Selected day: \(item)")
     }
 
     // MARK: - UICollectionViewDelegateFlowLayout

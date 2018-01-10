@@ -17,7 +17,8 @@ open class PaiStyle {
     public var dateItemNormalTextColor: UIColor = .darkGray
     public var dateItemExcludedTextColor: UIColor = .lightGray
     public var dateItemBackgroundColor: UIColor = .white
-    public var dateItemShouldHideExcludedDate: Bool = false
+    public var dateItemShouldHideOffsetDates: Bool = false
+    public var dateItemShouldGreyOutPastDates: Bool = false
 
     public var dateItemSymbolFont: UIFont = UIFont.systemFont(ofSize: 17.0, weight: .bold)
     public var dateItemSymbolTextColor: UIColor = .black

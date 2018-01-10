@@ -13,6 +13,8 @@ final class ExampleViewController: UIViewController {
 
     private var style: PaiStyle = {
         let style = PaiStyle.shared
+        style.dateItemShouldGreyOutPastDates = true
+        style.dateItemShouldHideOffsetDates = true
         return style
     }()
 

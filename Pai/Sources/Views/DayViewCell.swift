@@ -29,11 +29,16 @@ internal class DayViewCell: UICollectionViewCell {
         let formatter = DateFormatter()
         formatter.dateFormat = "d"
         dateLabel.text = formatter.string(from: date)
+
         switch style {
-        case .normal:
+        case .active:
             dateLabel.textColor = PaiStyle.shared.dateItemNormalTextColor
-        case .excluded:
-            let isShouldBeHidden = PaiStyle.shared.dateItemShouldHideExcludedDate
+        case .pastDate:
+            let isShouldGrayOut = PaiStyle.shared.dateItemShouldGreyOutPastDates
+            let activeColor = PaiStyle.shared.dateItemNormalTextColor
+            dateLabel.textColor = isShouldGrayOut ? .lightGray : activeColor
+        case .offsetDate:
+            let isShouldBeHidden = PaiStyle.shared.dateItemShouldHideOffsetDates
             let excludedColor = PaiStyle.shared.dateItemExcludedTextColor
             dateLabel.textColor = isShouldBeHidden ? .clear : excludedColor
         }

@@ -12,7 +12,10 @@ private let calendar = Calendar.autoupdatingCurrent
 private let currentDate = Date()
 
 public struct PaiDate {
-    let date: Date
+    public let date: Date
+    public var isPastDate: Bool {
+        return calendar.compare(date, to: Date(), toGranularity: .day) == .orderedAscending
+    }
 }
 
 public enum Month: Int {
@@ -24,7 +27,7 @@ public enum Day: Int {
 }
 
 public enum DateItemStyle {
-    case normal, excluded
+    case active, offsetDate, pastDate
 }
 
 internal class PaiCalendar {
