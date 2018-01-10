@@ -16,6 +16,9 @@ public struct PaiDate {
     public var isPastDate: Bool {
         return calendar.compare(date, to: Date(), toGranularity: .day) == .orderedAscending
     }
+    public var isToday: Bool {
+        return calendar.compare(date, to: Date(), toGranularity: .day) == .orderedSame
+    }
 }
 
 public enum Month: Int {
@@ -27,7 +30,7 @@ public enum Day: Int {
 }
 
 public enum DateItemStyle {
-    case active, offsetDate, pastDate
+    case today, active, offsetDate, pastDate
 }
 
 internal class PaiCalendar {

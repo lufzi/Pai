@@ -60,6 +60,8 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
         } else {
             if item.isPastDate {
                 cell.configure(date: item.date, style: .pastDate)
+            } else if item.isToday {
+                cell.configure(date: item.date, style: .today)
             } else {
                 cell.configure(date: item.date, style: .active)
             }
