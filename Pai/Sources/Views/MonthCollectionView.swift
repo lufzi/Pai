@@ -8,10 +8,11 @@
 
 import UIKit
 
-open class MonthCollectionView: UICollectionView {
+public class MonthCollectionView: UICollectionView {
 
-    let calendar = PaiCalendar.current
-    var style: PaiStyle
+    private let calendar = PaiCalendar.current
+    public var style: PaiStyle
+    public weak var calendarDelegate: PaiCalendarDelegate?
 
     public init(style: PaiStyle) {
         self.style = style
@@ -24,11 +25,25 @@ open class MonthCollectionView: UICollectionView {
         delegate = self
         dataSource = self
         showsVerticalScrollIndicator = false
+        NotificationCenter.default.addObserver(self, selector: #selector(dateDidSelect), name: NSNotification.Name(rawValue: "me.luqmanfauzi.Pai"), object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     required public init?(coder aDecoder: NSCoder) {
         style = PaiStyle.shared
         super.init(coder: aDecoder)
+    }
+
+    @objc private func dateDidSelect(_ notification: Notification) {
+        guard let object = notification.object as? (PaiDate, Int) else {
+            return
+        }
+        let date = object.0
+        let index = object.1
+        calendarDelegate?.calendarDateDidSelect(in: self, at: index, date: date)
     }
 }
 

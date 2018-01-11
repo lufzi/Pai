@@ -8,7 +8,7 @@
 
 import UIKit
 
-internal class DayViewCell: UICollectionViewCell {
+final class DayViewCell: UICollectionViewCell {
 
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
@@ -34,7 +34,7 @@ internal class DayViewCell: UICollectionViewCell {
         addSubview(dateLabel)
     }
 
-    public func configure(date: Date, style: DateItemStyle) {
+    func configure(date: Date, style: DateItemStyle) {
         let formatter = DateFormatter()
         formatter.dateFormat = "d"
         dateLabel.text = formatter.string(from: date)

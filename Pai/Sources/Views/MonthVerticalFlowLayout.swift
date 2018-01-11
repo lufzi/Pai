@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class MonthVerticalFlowLayout: UICollectionViewFlowLayout {
+final class MonthVerticalFlowLayout: UICollectionViewFlowLayout {
 
     private var calendar = PaiCalendar.current
 

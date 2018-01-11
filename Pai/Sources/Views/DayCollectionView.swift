@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class DayCollectionView: UICollectionView {
+public class DayCollectionView: UICollectionView {
 
     let calendar = PaiCalendar.current
     var month: Month = .jan {
@@ -73,12 +73,14 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
 
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = dates[indexPath.item + 1]
-        print("Selected day: \(item)")
+        let index = indexPath.item
+        let object: (PaiDate, Int) = (item, index)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "me.luqmanfauzi.Pai"), object: object)
     }
 
     // MARK: - UICollectionViewDelegateFlowLayout
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let itemWidth: CGFloat = collectionView.bounds.width / CGFloat(calendar.veryShortWeekdaySymbols.count)
         return CGSize(width: itemWidth, height: itemWidth)
     }

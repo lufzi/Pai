@@ -8,7 +8,7 @@
 
 import UIKit
 
-internal class MonthHeaderView: UICollectionReusableView {
+final class MonthHeaderView: UICollectionReusableView {
 
     private lazy var symbolLabel: UILabel = {
         let label = UILabel()

@@ -9,7 +9,7 @@
 import UIKit
 import Pai
 
-final class ExampleViewController: UIViewController {
+final class ExampleViewController: UIViewController, PaiCalendarDelegate {
 
     private var style: PaiStyle = {
         let style = PaiStyle.shared
@@ -20,6 +20,7 @@ final class ExampleViewController: UIViewController {
 
     private lazy var monthlyView: MonthCollectionView = {
         let view = MonthCollectionView(style: self.style)
+        view.calendarDelegate = self
         return view
     }()
 
@@ -37,5 +38,11 @@ final class ExampleViewController: UIViewController {
             monthlyView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             monthlyView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+    }
+
+    // MARK: - PaiCalendarDelegate
+
+    func calendarDateDidSelect(in calendar: MonthCollectionView, at index: Int, date: PaiDate) {
+        print("Selected date: \(date.date)")
     }
 }

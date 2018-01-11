@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class DayFlowLayout: UICollectionViewFlowLayout {
+final class DayFlowLayout: UICollectionViewFlowLayout {
 
     override init() {
         super.init()

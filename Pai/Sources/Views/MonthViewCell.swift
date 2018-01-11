@@ -8,7 +8,7 @@
 
 import UIKit
 
-internal class MonthViewCell: UICollectionViewCell {
+final class MonthViewCell: UICollectionViewCell {
 
     private lazy var dayCollectionView: DayCollectionView = {
         let collectionView = DayCollectionView()

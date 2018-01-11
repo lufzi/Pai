@@ -14,6 +14,7 @@
 		D588F26E1FEBF48C00AEE201 /* PaiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D588F26D1FEBF48C00AEE201 /* PaiTests.swift */; };
 		D588F2701FEBF48C00AEE201 /* Pai.h in Headers */ = {isa = PBXBuildFile; fileRef = D588F2621FEBF48C00AEE201 /* Pai.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D5D3AD8B2006F113002C74E4 /* UICollectionView+Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D3AD8A2006F113002C74E4 /* UICollectionView+Custom.swift */; };
+		D5D3AD9220071787002C74E4 /* PaiCalendarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D3AD9120071787002C74E4 /* PaiCalendarDelegate.swift */; };
 		D5E3FCE51FF28CF90059433E /* MonthHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E3FCE41FF28CF90059433E /* MonthHeaderView.swift */; };
 		D5E3FCE71FF28D360059433E /* MonthVerticalFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E3FCE61FF28D360059433E /* MonthVerticalFlowLayout.swift */; };
 		D5E3FCE91FF2A2540059433E /* MonthViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E3FCE81FF2A2540059433E /* MonthViewCell.swift */; };
@@ -43,6 +44,7 @@
 		D588F26D1FEBF48C00AEE201 /* PaiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaiTests.swift; sourceTree = "<group>"; };
 		D588F26F1FEBF48C00AEE201 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D5D3AD8A2006F113002C74E4 /* UICollectionView+Custom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Custom.swift"; sourceTree = "<group>"; };
+		D5D3AD9120071787002C74E4 /* PaiCalendarDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaiCalendarDelegate.swift; sourceTree = "<group>"; };
 		D5E3FCE41FF28CF90059433E /* MonthHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthHeaderView.swift; sourceTree = "<group>"; };
 		D5E3FCE61FF28D360059433E /* MonthVerticalFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthVerticalFlowLayout.swift; sourceTree = "<group>"; };
 		D5E3FCE81FF2A2540059433E /* MonthViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthViewCell.swift; sourceTree = "<group>"; };
@@ -148,6 +150,7 @@
 		D588F27A1FEBF4F700AEE201 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				D5D3AD8C20070E46002C74E4 /* Protocols */,
 				D5D3AD892006F0EC002C74E4 /* Extensions */,
 				D54FC8ED1FECA86200EC148D /* Models */,
 				D54FC8EB1FECA85500EC148D /* Views */,
@@ -162,6 +165,14 @@
 				D5D3AD8A2006F113002C74E4 /* UICollectionView+Custom.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		D5D3AD8C20070E46002C74E4 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				D5D3AD9120071787002C74E4 /* PaiCalendarDelegate.swift */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -299,6 +310,7 @@
 				D5E3FCF31FF2BC7C0059433E /* DayFlowLayout.swift in Sources */,
 				D5E3FCE51FF28CF90059433E /* MonthHeaderView.swift in Sources */,
 				D54FC8EF1FECA8FD00EC148D /* MonthCollectionView.swift in Sources */,
+				D5D3AD9220071787002C74E4 /* PaiCalendarDelegate.swift in Sources */,
 				D5D3AD8B2006F113002C74E4 /* UICollectionView+Custom.swift in Sources */,
 				D5E3FCF11FF2BBFA0059433E /* DayCollectionView.swift in Sources */,
 				D54FC8F61FECB04E00EC148D /* DayViewCell.swift in Sources */,
