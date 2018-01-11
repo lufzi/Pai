@@ -19,13 +19,15 @@ final class ExampleViewController: UIViewController, PaiCalendarDelegate {
     }()
 
     private lazy var monthlyView: MonthCollectionView = {
-        let view = MonthCollectionView(style: self.style)
+        let view = MonthCollectionView(style: self.style, startYear: 2017, endYear: 2018)
         view.calendarDelegate = self
         return view
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Today", style: .done, target: self, action: #selector(didTapToday))
     }
 
     override func viewDidLayoutSubviews() {
@@ -38,6 +40,10 @@ final class ExampleViewController: UIViewController, PaiCalendarDelegate {
             monthlyView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             monthlyView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+    }
+
+    @objc func didTapToday() {
+        monthlyView.scrolltoCurrentMonth()
     }
 
     // MARK: - PaiCalendarDelegate

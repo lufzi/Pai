@@ -10,13 +10,21 @@ import UIKit
 
 public class MonthCollectionView: UICollectionView {
 
-    public var style: PaiStyle
+    // MARK: - Public Properties
+
+    public var sharedStyle: PaiStyle
     public weak var calendarDelegate: PaiCalendarDelegate?
 
-    private var months: [PaiMonth] = PaiMonth.generatesInYears(from: 2017, to: 2019)
+    // MARK: - Private Properties
 
-    public init(style: PaiStyle) {
-        self.style = style
+    private var months: [PaiMonth]!
+
+    public init(style: PaiStyle, startYear: Int, endYear: Int) {
+        /// Set data
+        sharedStyle = style
+        months = PaiMonth.generatesInYears(from: startYear, to: endYear)
+
+        /// Setup UI
         let layout = MonthVerticalFlowLayout()
         super.init(frame: .zero, collectionViewLayout: layout)
         register(cellWithClass: MonthViewCell.self)
@@ -27,6 +35,11 @@ public class MonthCollectionView: UICollectionView {
         dataSource = self
         showsVerticalScrollIndicator = false
         NotificationCenter.default.addObserver(self, selector: #selector(dateDidSelect), name: NSNotification.Name(rawValue: "me.luqmanfauzi.Pai"), object: nil)
+
+        /// Scroll to current date if needed
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.scrolltoCurrentMonth(animated: false)
+        }
     }
 
     deinit {
@@ -34,7 +47,7 @@ public class MonthCollectionView: UICollectionView {
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        style = PaiStyle.shared
+        sharedStyle = PaiStyle.shared
         super.init(coder: aDecoder)
     }
 
@@ -47,9 +60,19 @@ public class MonthCollectionView: UICollectionView {
         calendarDelegate?.calendarDateDidSelect(in: self, at: index, date: date)
     }
 
-    public func scrolltoCurrentMonth() {
-        let indexPath = IndexPath(item: 0, section: 5)
-        scrollToItem(at: indexPath, at: .bottom, animated: false)
+    public func scrolltoCurrentMonth(animated: Bool = true) {
+        let components = Calendar.autoupdatingCurrent.dateComponents([.year, .month, .day], from: Date())
+        let currentMonth = components.month
+        let currentYear = components.year
+        guard let indexTarget = months.enumerated()
+            .filter({ $0.element.year == currentYear })
+            .filter({ $0.element.month.rawValue + 1 == currentMonth })
+            .first?.offset
+        else {
+            return
+        }
+        let indexPath = IndexPath(item: 0, section: indexTarget)
+        scrollToItem(at: indexPath, at: .bottom, animated: animated)
     }
 }
 

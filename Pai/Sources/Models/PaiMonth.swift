@@ -20,6 +20,9 @@ public struct PaiMonth {
 
 public extension PaiMonth {
     static func generatesInYears(from startYear: Int, to endYear: Int) -> [PaiMonth] {
+        guard endYear >= startYear else {
+            fatalError("The end year must be greater than or equal to start year.")
+        }
         var months: [PaiMonth] = []
         for year in startYear...endYear {
             for (index, symbol) in Calendar.autoupdatingCurrent.shortMonthSymbols.enumerated() {
