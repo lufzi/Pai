@@ -29,27 +29,85 @@ final class DayViewCell: UICollectionViewCell {
         return layer
     }()
 
+    private lazy var eventViews: [UIView] = {
+        let maxStacks = 6
+        var views: [UIView] = []
+        for i in 1...maxStacks {
+            let view = UIView()
+            view.backgroundColor = (i == maxStacks) ? .yellow : .clear
+            view.translatesAutoresizingMaskIntoConstraints = false
+            view.heightAnchor.constraint(equalToConstant: 3.0).isActive = true
+            views.append(view)
+        }
+        return views
+    }()
+
+    private lazy var eventsStackView: UIStackView = {
+        let view = UIStackView(arrangedSubviews: self.eventViews)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.axis = .vertical
+        view.isBaselineRelativeArrangement = true
+        view.distribution = .equalSpacing
+        view.alignment = .fill
+        view.spacing = 1.0
+        return view
+    }()
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        backgroundColor = PaiStyle.shared.dateItemBackgroundColor
+
+        contentView.backgroundColor = PaiStyle.shared.dateItemBackgroundColor
 
         topLine.frame = CGRect(x: 0, y: 0.7, width: bounds.width, height: 0.7)
         topLine.backgroundColor = UIColor.clear.cgColor
         layer.addSublayer(topLine)
 
-        todayIndicator.frame = UIEdgeInsetsInsetRect(bounds, UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0))
+        let labelFrame = UIEdgeInsetsInsetRect(bounds, PaiStyle.shared.dateItemDayLabelInset)
+        todayIndicator.frame = labelFrame
         todayIndicator.cornerRadius = todayIndicator.frame.height * 0.5
         layer.addSublayer(todayIndicator)
 
-        dateLabel.frame = UIEdgeInsetsInsetRect(bounds, .zero)
+        dateLabel.frame = labelFrame
         addSubview(dateLabel)
+
+        if PaiStyle.shared.dateItemDisplayEventsIfAny {
+            addSubview(eventsStackView)
+            NSLayoutConstraint.activate([
+                eventsStackView.topAnchor.constraint(equalTo: topAnchor, constant: labelFrame.height + 5.0),
+                eventsStackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor),
+                eventsStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+                eventsStackView.widthAnchor.constraint(equalToConstant: bounds.width - 15.0)
+            ])
+        }
     }
 
-    func configure(date: Date, style: DateItemStyle) {
+    public func configure(date: Date) {
         let formatter = DateFormatter()
         formatter.dateFormat = "d"
         dateLabel.text = formatter.string(from: date)
-        
+    }
+
+    public func configure(events: [PaiDateEvent]) {
+        guard PaiStyle.shared.dateItemDisplayEventsIfAny, !(events.isEmpty) else {
+            eventsStackView.isHidden = true
+            return
+        }
+        if events.count <= 5 {
+            /// Remove last subview in stackview.
+            eventsStackView.removeArrangedSubview(eventsStackView.arrangedSubviews.last!)
+            eventViews.last?.removeFromSuperview()
+        }
+        for (index, event) in events.enumerated() {
+            if 0...4 ~= index {
+                /// Within 5 events range
+                eventsStackView.arrangedSubviews[index].backgroundColor = event.tagColor
+            } else {
+                break
+            }
+        }
+    }
+
+    public func configure(style: DateItemStyle) {
         let topLineColor = UIColor.lightGray.withAlphaComponent(0.5).cgColor
         let isDisplayDateTopLine = PaiStyle.shared.dateItemShouldDisplayLine
         let isPastDateGrayOut = PaiStyle.shared.dateItemShouldGreyOutPastDates

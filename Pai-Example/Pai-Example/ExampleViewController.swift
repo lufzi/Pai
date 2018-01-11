@@ -9,19 +9,23 @@
 import UIKit
 import Pai
 
-final class ExampleViewController: UIViewController, PaiCalendarDelegate {
+final class ExampleViewController: UIViewController, PaiCalendarDelegate, PaiCalendarDataSource {
 
     private var style: PaiStyle = {
         let style = PaiStyle.shared
         style.dateItemShouldGreyOutPastDates = true
         style.dateItemShouldHideOffsetDates = true
         style.dateItemShouldDisplayLine = true
+        /// Date events configuration
+        style.dateItemDayLabelInset = UIEdgeInsets(top: 3.0, left: 8.0, bottom: 30.0, right: 8.0)
+        style.dateItemDisplayEventsIfAny = true
         return style
     }()
 
     private lazy var monthlyView: MonthCollectionView = {
         let view = MonthCollectionView(style: self.style, startYear: 2017, endYear: 2018)
         view.calendarDelegate = self
+        view.calendarDataSource = self
         return view
     }()
 
@@ -51,5 +55,12 @@ final class ExampleViewController: UIViewController, PaiCalendarDelegate {
 
     func calendarDateDidSelect(in calendar: MonthCollectionView, at index: Int, date: PaiDate) {
         print("Selected date: \(date.date)")
+    }
+
+    // MARK: - PaiCalendarDataSource
+
+    func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiDateEvent] {
+        let events = PaiDateEvent.generateRandom(numberOfEvents: 3)
+        return events
     }
 }

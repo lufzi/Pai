@@ -8,6 +8,21 @@
 
 import Foundation
 
+public protocol PaiCalendarDataSource: class {
+
+    /// List of `[PaiDateEvent]` events to be displayed in calendar
+    ///
+    /// - Parameter calendar: `MonthCollectionView`
+    /// - Returns: list of all events to be displayed in the calendar view
+    func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiDateEvent]
+}
+
+public extension PaiCalendarDataSource {
+    func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiDateEvent] {
+        return []
+    }
+}
+
 public protocol PaiCalendarDelegate: class {
 
     /// Send event on tapping specific date in month
@@ -19,6 +34,6 @@ public protocol PaiCalendarDelegate: class {
     func calendarDateDidSelect(in calendar: MonthCollectionView, at index: Int, date: PaiDate)
 }
 
-extension PaiCalendarDelegate {
+public extension PaiCalendarDelegate {
     func calendarDateDidSelect(in calendar: MonthCollectionView, at index: Int, date: PaiDate) { }
 }

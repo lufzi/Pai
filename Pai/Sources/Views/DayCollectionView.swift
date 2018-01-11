@@ -27,6 +27,12 @@ public class DayCollectionView: UICollectionView {
         }
     }
 
+    private var thisMonthEvents: [PaiDateEvent] = [] {
+        didSet {
+            reloadData()
+        }
+    }
+
     public init() {
         let layout = DayFlowLayout()
         super.init(frame: .zero, collectionViewLayout: layout)
@@ -41,8 +47,38 @@ public class DayCollectionView: UICollectionView {
         super.init(coder: aDecoder)
     }
 
+    /// Setup data for `DayCollectionView`.
+    ///
+    /// - Parameter month: `PaiMonth`
     public func setup(_ month: PaiMonth) {
         self.month = month
+    }
+
+    /// Populates all the events for a particular month & year.
+    ///
+    /// - Parameter events: `[PaiDateEvent]?`
+    public func populateCalendarEventsWithinMonth(_ events: [PaiDateEvent]?) {
+        guard let monthItem = month, let events = events else {
+            return
+        }
+
+        let currentMonthNumber: String = (monthItem.month.rawValue + 1).description
+        let currentYear: String = monthItem.year.description
+
+        /// Get all events in this particular month & year.
+        thisMonthEvents = events.filter({ event in
+            /// Filter event of the year.
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy"
+            let yearString: String = formatter.string(from: event.date)
+            return (currentYear == yearString)
+        }).filter({ event in
+            /// Filter event of the month.
+            let formatter = DateFormatter()
+            formatter.dateFormat = "M"
+            let monthNumber: String = formatter.string(from: event.date)
+            return (currentMonthNumber == monthNumber)
+        })
     }
 }
 
@@ -63,19 +99,26 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
         }
 
         let item = dates[indexPath.item]
+        cell.configure(date: item.date)
+
+        /// Filter event of the particular date, according to collectionView item index.
+        let theDayEvents = thisMonthEvents.filter({
+            Calendar.autoupdatingCurrent.compare($0.date, to: item.date, toGranularity: .day) == .orderedSame
+        })
+        cell.configure(events: theDayEvents)
 
         /// Configure date item cell by the 3 defined `DateItemStyle` values
         if let beginning = PaiCalendar.current.indexStartDate(inMonth: monthItem), indexPath.item < beginning {
-            cell.configure(date: item.date, style: .offsetDate)
+            cell.configure(style: .offsetDate)
         } else if let end = PaiCalendar.current.indexEndDate(inMonth: monthItem), indexPath.item > end {
-            cell.configure(date: item.date, style: .offsetDate)
+            cell.configure(style: .offsetDate)
         } else {
             if item.isPastDate {
-                cell.configure(date: item.date, style: .pastDate)
+                cell.configure(style: .pastDate)
             } else if item.isToday {
-                cell.configure(date: item.date, style: .today)
+                cell.configure(style: .today)
             } else {
-                cell.configure(date: item.date, style: .insetDate)
+                cell.configure(style: .insetDate)
             }
         }
         return cell
@@ -94,6 +137,7 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
 
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let itemWidth: CGFloat = collectionView.bounds.width / CGFloat(7)
-        return CGSize(width: itemWidth, height: itemWidth)
+        let itemHeight: CGFloat = itemWidth
+        return CGSize(width: itemWidth, height: itemHeight)
     }
 }

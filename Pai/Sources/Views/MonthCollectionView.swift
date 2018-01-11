@@ -14,6 +14,7 @@ public class MonthCollectionView: UICollectionView {
 
     public var sharedStyle: PaiStyle
     public weak var calendarDelegate: PaiCalendarDelegate?
+    public weak var calendarDataSource: PaiCalendarDataSource?
 
     // MARK: - Private Properties
 
@@ -94,6 +95,7 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
         }
         let month = months[indexPath.section]
         cell.configure(month: month)
+        cell.configure(allCalendarEvents: calendarDataSource?.calendarDateEvents(in: self))
         return cell
     }
 
