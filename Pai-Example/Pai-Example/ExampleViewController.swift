@@ -15,6 +15,7 @@ final class ExampleViewController: UIViewController, PaiCalendarDelegate {
         let style = PaiStyle.shared
         style.dateItemShouldGreyOutPastDates = true
         style.dateItemShouldHideOffsetDates = true
+        style.dateItemShouldDisplayLine = true
         return style
     }()
 

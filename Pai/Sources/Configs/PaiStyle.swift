@@ -25,6 +25,7 @@ public class PaiStyle {
     public var dateItemTodayIndicatorTextColor: UIColor = .white
     public var dateItemShouldHideOffsetDates: Bool = false
     public var dateItemShouldGreyOutPastDates: Bool = false
+    public var dateItemShouldDisplayLine: Bool = false
 
     public var dateItemSymbolFont: UIFont = UIFont.systemFont(ofSize: 17.0, weight: .bold)
     public var dateItemSymbolTextColor: UIColor = .black
@@ -33,8 +34,8 @@ public class PaiStyle {
     public var monthItemHeaderFont: UIFont = UIFont.systemFont(ofSize: 20.0, weight: .heavy)
     public var monthItemHeaderTextAlignment: NSTextAlignment = .left
     public var monthItemHeaderBackgroundColor: UIColor = .white
-    public var monthItemHeaderTextColor: UIColor = .black
+    public var monthItemHeaderTextColor: UIColor = .red
     public var monthItemHeaderShouldPin: Bool = false
-    public var monthItemHeaderHeight: CGFloat = 40.0
+    public var monthItemHeaderHeight: CGFloat = 50.0
     public var monthItemPadding: CGFloat = 0
 }

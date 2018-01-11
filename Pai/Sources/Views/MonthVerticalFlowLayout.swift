@@ -18,12 +18,10 @@ final class MonthVerticalFlowLayout: UICollectionViewFlowLayout {
         minimumLineSpacing = 0
         sectionHeadersPinToVisibleBounds = PaiStyle.shared.monthItemHeaderShouldPin
 
-        let padding: CGFloat = PaiStyle.shared.monthItemPadding
-        sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: padding, right: 0)
+        sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: PaiStyle.shared.monthItemPadding, right: 0)
 
         let width: CGFloat = UIScreen.main.bounds.width
-        let height: CGFloat = PaiStyle.shared.monthItemHeaderHeight
-        headerReferenceSize = CGSize(width: width, height: height)
+        headerReferenceSize = CGSize(width: width, height: PaiStyle.shared.monthItemHeaderHeight)
     }
 
     required init?(coder aDecoder: NSCoder) {
