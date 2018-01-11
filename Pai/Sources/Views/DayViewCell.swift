@@ -48,7 +48,7 @@ final class DayViewCell: UICollectionViewCell {
         case .today:
             dateLabel.textColor = PaiStyle.shared.dateItemTodayIndicatorTextColor
             indicator.backgroundColor = PaiStyle.shared.dateItemTodayIndicatorColor.cgColor
-        case .active:
+        case .insetDate:
             dateLabel.textColor = PaiStyle.shared.dateItemNormalTextColor
             indicator.backgroundColor = UIColor.clear.cgColor
         case .offsetDate:

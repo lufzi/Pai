@@ -10,9 +10,10 @@ import UIKit
 
 public class MonthCollectionView: UICollectionView {
 
-    private let calendar = PaiCalendar.current
     public var style: PaiStyle
     public weak var calendarDelegate: PaiCalendarDelegate?
+
+    private var months: [PaiMonth] = PaiMonth.generatesInYears(from: 2017, to: 2019)
 
     public init(style: PaiStyle) {
         self.style = style
@@ -45,6 +46,11 @@ public class MonthCollectionView: UICollectionView {
         let index = object.1
         calendarDelegate?.calendarDateDidSelect(in: self, at: index, date: date)
     }
+
+    public func scrolltoCurrentMonth() {
+        let indexPath = IndexPath(item: 0, section: 5)
+        scrollToItem(at: indexPath, at: .bottom, animated: false)
+    }
 }
 
 extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -52,7 +58,7 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
     // MARK: - UICollectionViewDataSource
 
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return calendar.monthsOfYearCount
+        return months.count
     }
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -63,14 +69,9 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
         guard let cell = collectionView.dequeueReusableCell(withClass: MonthViewCell.self, for: indexPath) else {
             fatalError("DayViewCell not found.")
         }
-        cell.configure(monthIndex: indexPath.section)
+        let month = months[indexPath.section]
+        cell.configure(month: month)
         return cell
-    }
-
-    // MARK: - UICollectionViewDelegate
-
-    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("Selected item: \(indexPath.item)")
     }
 
     // MARK: - UICollectionViewDelegateFlowLayout
@@ -83,18 +84,15 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
         else {
             fatalError("MonthlyHeaderReusableView not found.")
         }
-        let monthSymbol = calendar.shortMonthSymbols[indexPath.section]
-        headerView.configure(monthSymbol: monthSymbol, yearSymbol: calendar.currentYear.description)
+        let month = months[indexPath.section]
+        headerView.configure(monthSymbol: month.symbol, year: month.year)
         return headerView
     }
 
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.bounds.width
-        guard let month = Month(rawValue: indexPath.section) else {
-            return CGSize(width: width, height: 0)
-        }
-
-        let itemsCountInSection = calendar.numberOfCells(inMonth: month)
+        let month = months[indexPath.section]
+        let itemsCountInSection = PaiCalendar.current.numberOfItemMonthCells(inMonth: month)
         let itemsCountInRow = itemsCountInSection / 7
         let dateItemHeight: CGFloat = width / 7
         let symbolsHeight: CGFloat = 25.0

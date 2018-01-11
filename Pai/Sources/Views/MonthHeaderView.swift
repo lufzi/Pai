@@ -27,7 +27,7 @@ final class MonthHeaderView: UICollectionReusableView {
         addSubview(symbolLabel)
     }
 
-    public func configure(monthSymbol: String, yearSymbol: String) {
-        symbolLabel.text = monthSymbol + " " + yearSymbol
+    public func configure(monthSymbol: String, year: Int) {
+        symbolLabel.text = monthSymbol + " " + year.description
     }
 }

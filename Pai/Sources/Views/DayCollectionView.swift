@@ -10,13 +10,18 @@ import Foundation
 
 public class DayCollectionView: UICollectionView {
 
-    let calendar = PaiCalendar.current
-    var month: Month = .jan {
+    // MARK: - Public Properties
+
+    private var month: PaiMonth? {
         didSet {
-            dates = calendar.datesCountInMonth(inMonth: month)
+            guard let month = month else { return }
+            dates = PaiCalendar.current.datesCountInMonth(inMonth: month)
         }
     }
-    var dates: [PaiDate] = [] {
+
+    // MARK: - Private Properties
+
+    private var dates: [PaiDate] = [] {
         didSet {
             reloadData()
         }
@@ -35,6 +40,10 @@ public class DayCollectionView: UICollectionView {
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
+
+    public func setup(_ month: PaiMonth) {
+        self.month = month
+    }
 }
 
 extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -46,16 +55,19 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
     }
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withClass: DayViewCell.self, for: indexPath) else {
+        guard
+            let cell = collectionView.dequeueReusableCell(withClass: DayViewCell.self, for: indexPath),
+            let monthItem = month
+        else {
             fatalError("DayViewCell not found.")
         }
 
         let item = dates[indexPath.item]
 
         /// Configure date item cell by the 3 defined `DateItemStyle` values
-        if let beginning = calendar.indexStartDate(inMonth: month), indexPath.item < beginning {
+        if let beginning = PaiCalendar.current.indexStartDate(inMonth: monthItem), indexPath.item < beginning {
             cell.configure(date: item.date, style: .offsetDate)
-        } else if let end = calendar.indexEndDate(inMonth: month), indexPath.item > end {
+        } else if let end = PaiCalendar.current.indexEndDate(inMonth: monthItem), indexPath.item > end {
             cell.configure(date: item.date, style: .offsetDate)
         } else {
             if item.isPastDate {
@@ -63,7 +75,7 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
             } else if item.isToday {
                 cell.configure(date: item.date, style: .today)
             } else {
-                cell.configure(date: item.date, style: .active)
+                cell.configure(date: item.date, style: .insetDate)
             }
         }
         return cell
@@ -81,7 +93,7 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
     // MARK: - UICollectionViewDelegateFlowLayout
 
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let itemWidth: CGFloat = collectionView.bounds.width / CGFloat(calendar.veryShortWeekdaySymbols.count)
+        let itemWidth: CGFloat = collectionView.bounds.width / CGFloat(7)
         return CGSize(width: itemWidth, height: itemWidth)
     }
 }

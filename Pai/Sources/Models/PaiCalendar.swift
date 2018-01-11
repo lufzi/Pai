@@ -8,35 +8,13 @@
 
 import Foundation
 
-private let calendar = Calendar.autoupdatingCurrent
-private let currentDate = Date()
-
-public struct PaiDate {
-    public let date: Date
-    public var isPastDate: Bool {
-        return calendar.compare(date, to: Date(), toGranularity: .day) == .orderedAscending
-    }
-    public var isToday: Bool {
-        return calendar.compare(date, to: Date(), toGranularity: .day) == .orderedSame
-    }
-}
-
-public enum Month: Int {
-    case jan, feb, mar, apr, may, jun, jul, aug, sept, oct, nov, dec
-}
-
-public enum Day: Int {
-    case mon, tue, wed, thu, fri, sat, sun
-}
-
-public enum DateItemStyle {
-    case today, active, offsetDate, pastDate
-}
-
-internal class PaiCalendar {
+public class PaiCalendar {
 
     public static let current = PaiCalendar()
     private init() { }
+
+    private let calendar = Calendar.autoupdatingCurrent
+    private let today = Date()
 
     public var shortMonthSymbols: [String] {
         return calendar.shortMonthSymbols
@@ -45,39 +23,63 @@ internal class PaiCalendar {
     public var veryShortWeekdaySymbols: [String] {
         return calendar.veryShortWeekdaySymbols
     }
+}
 
-    public var currentMonth: Int {
-        return calendar.component(.month, from: currentDate)
+public extension PaiCalendar {
+
+    // MARK: - Days in Month, UI related
+
+    /// Construct the `[PaiDate]` list of a particular month & year according to `[DayViewCell]` scope.
+    ///
+    /// - Parameter month: `PaiMonth` which contains month & year values.
+    /// - Returns: list of `[PaiDate]` of given month & year.
+    public func datesCountInMonth(inMonth month: PaiMonth) -> [PaiDate] {
+        guard let startIndex = indexStartDate(inMonth: month) else {
+            fatalError("Index not found")
+        }
+        let date = startDate(inMonth: month)
+        let count = numberOfItemMonthCells(inMonth: month)
+        let dates: [PaiDate] = (0..<count).flatMap { index in
+            var components = DateComponents()
+            components.day = index - startIndex
+            return calendar.date(byAdding: components, to: date)
+        }.map {
+            return PaiDate(date: $0)
+        }
+        return dates
     }
 
-    public var currentYear: Int {
-        return calendar.component(.year, from: currentDate)
+    /// Get the maximum capacity of `[DayViewCell]` list in the `MonthViewCell` content.
+    ///
+    /// - Parameter month: `PaiMonth` which contains month & year values.
+    /// - Returns: the number of maximum count.
+    public func numberOfItemMonthCells(inMonth month: PaiMonth) -> Int {
+        if let weeksRange = calendar.range(of: .weekOfMonth, in: .month, for: startDate(inMonth: month)) {
+            let count = weeksRange.upperBound - weeksRange.lowerBound
+            return count * 7
+        }
+        return 0
     }
 
-    public var monthsOfYearCount: Int {
-        let dateComponents = DateComponents(year: currentYear)
-        let date = calendar.date(from: dateComponents)!
-        let range = calendar.range(of: .month, in: .year, for: date)!
-        let monthsCount = range.count
-        return monthsCount
-    }
+    // MARK: - Days in Month, data related
 
-    // MARK: - Days in Month
-
-    private func date(inMonth month: Month) -> Date {
-        var components = DateComponents()
-        components.month = month.rawValue
-        return calendar.date(byAdding: components, to: currentDate) ?? Date()
-    }
-
-    private func startDate(inMonth month: Month) -> Date {
-        let particularDateInMonth = date(inMonth: month)
-        var components = calendar.dateComponents([.year, .month, .day], from: particularDateInMonth)
+    /// Get the starting date of particular month & year
+    ///
+    /// - Parameter month: `PaiMonth` which contains month & year values.
+    /// - Returns: the first `Date` of particular month & year.
+    private func startDate(inMonth month: PaiMonth) -> Date {
+        var components = calendar.dateComponents([.year, .month, .day], from: today)
         components.day = 1
+        components.month = month.month.rawValue + 1
+        components.year = month.year
         return calendar.date(from: components) ?? Date()
     }
 
-    public func indexStartDate(inMonth month: Month) -> Int? {
+    /// Get the index value of first `Date` of particular month & year in the `MonthViewCell` content / `[DayViewCell]` list.
+    /// In order to set the date month opening 'edge' date of the month.
+    /// - Parameter month: `PaiMonth` which contains month & year values.
+    /// - Returns: `Int` index value of the first date of particular onth & year values.
+    public func indexStartDate(inMonth month: PaiMonth) -> Int? {
         let date = startDate(inMonth: month)
         if let index = calendar.ordinality(of: .day, in: .weekOfMonth, for: date) {
             return index - 1
@@ -85,7 +87,11 @@ internal class PaiCalendar {
         return nil
     }
 
-    public func indexEndDate(inMonth month: Month) -> Int? {
+    /// Get the index value of last `Date` of particular month & year in the `MonthViewCell` content / `[DayViewCell]`.
+    /// In order to set the date month closure 'edge' date of the month.
+    /// - Parameter month: `PaiMonth` which contains month & year values.
+    /// - Returns: `Int` index value of the first date of particular onth & year values.
+    public func indexEndDate(inMonth month: PaiMonth) -> Int? {
         let date = startDate(inMonth: month)
         let startIndex = indexStartDate(inMonth: month)
         if let rangeDays = calendar.range(of: .day, in: .month, for: date), let beginning = startIndex {
@@ -93,28 +99,5 @@ internal class PaiCalendar {
             return count + beginning - 1
         }
         return nil
-    }
-
-    public func datesCountInMonth(inMonth month: Month) -> [PaiDate] {
-        guard let startIndex = indexStartDate(inMonth: month) else {
-            fatalError("Index not found")
-        }
-        var components = DateComponents()
-        let count = numberOfCells(inMonth: month)
-        let dates: [PaiDate] = (0..<count).flatMap { index in
-            components.day = index - startIndex
-            return calendar.date(byAdding: components, to: startDate(inMonth: month))
-        }.map {
-            return PaiDate(date: $0)
-        }
-        return dates
-    }
-
-    public func numberOfCells(inMonth month: Month) -> Int {
-        if let weeksRange = calendar.range(of: .weekOfMonth, in: .month, for: startDate(inMonth: month)) {
-            let count = weeksRange.upperBound - weeksRange.lowerBound
-            return count * 7
-        }
-        return 0
     }
 }

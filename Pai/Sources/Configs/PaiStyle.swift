@@ -8,7 +8,11 @@
 
 import Foundation
 
-open class PaiStyle {
+public enum DateItemStyle {
+    case today, insetDate, offsetDate, pastDate
+}
+
+public class PaiStyle {
 
     private init() { }
     public static let shared = PaiStyle()

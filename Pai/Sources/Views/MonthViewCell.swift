@@ -15,14 +15,9 @@ final class MonthViewCell: UICollectionViewCell {
         return collectionView
     }()
 
-    private var calendar = PaiCalendar.current
-    private var weeksOfMonthCount: Int {
-        return calendar.veryShortWeekdaySymbols.count
-    }
-
     private lazy var weekdaySymbolLabels: [UILabel] = {
         var labels: [UILabel] = []
-        for symbol in calendar.veryShortWeekdaySymbols {
+        for symbol in PaiCalendar.current.veryShortWeekdaySymbols {
             let label = UILabel()
             label.font = PaiStyle.shared.dateItemSymbolFont
             label.textColor = PaiStyle.shared.dateItemSymbolTextColor
@@ -47,15 +42,12 @@ final class MonthViewCell: UICollectionViewCell {
             label.backgroundColor = .white
             addSubview(label)
         }
-
-        dayCollectionView.frame = UIEdgeInsetsInsetRect(
-            bounds,
-            UIEdgeInsets(top: weekdaySymbolHeight, left: 0, bottom: 0, right: 0)
-        )
+        dayCollectionView.frame = UIEdgeInsetsInsetRect(bounds, UIEdgeInsets(top: weekdaySymbolHeight, left: 0, bottom: 0, right: 0))
         addSubview(dayCollectionView)
     }
 
-    func configure(monthIndex: Int) {
-        dayCollectionView.month = Month(rawValue: monthIndex) ?? .jan
+    public func configure(month: PaiMonth) {
+        /// Populates all the dates in particular month & year
+        dayCollectionView.setup(month)
     }
 }
