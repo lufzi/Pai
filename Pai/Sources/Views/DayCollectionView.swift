@@ -113,7 +113,7 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
     // MARK: - UICollectionViewDelegate
 
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let item = dates[indexPath.item + 1]
+        let item = dates[indexPath.item]
         let index = indexPath.item
         let object: (PaiDate, Int) = (item, index)
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "me.luqmanfauzi.Pai"), object: object)
