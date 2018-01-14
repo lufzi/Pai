@@ -8,6 +8,8 @@
 
 import Foundation
 
+internal typealias DailyEventsItem = (date: Date, events: [PaiDateEvent])
+
 public class DayCollectionView: UICollectionView {
 
     // MARK: - Public Properties
@@ -21,13 +23,13 @@ public class DayCollectionView: UICollectionView {
 
     // MARK: - Private Properties
 
-    private var dates: [PaiDate] = [] {
+    private var dailyEventsItems: [DailyEventsItem] = [] {
         didSet {
             reloadData()
         }
     }
 
-    private var thisMonthEvents: [PaiDateEvent] = [] {
+    private var dates: [PaiDate] = [] {
         didSet {
             reloadData()
         }
@@ -47,38 +49,23 @@ public class DayCollectionView: UICollectionView {
         super.init(coder: aDecoder)
     }
 
-    /// Setup data for `DayCollectionView`.
+    /// Configure `PaiMonth` & its `[PaiDateEvent]` events for particular month
     ///
-    /// - Parameter month: `PaiMonth`
-    public func setup(_ month: PaiMonth) {
+    /// - Parameters:
+    ///   - month: `PaiMonth`
+    ///   - events: events in particular `PaiMonth`
+    public func configure(_ month: PaiMonth, _ events: [PaiDateEvent]) {
         self.month = month
-    }
-
-    /// Populates all the events for a particular month & year.
-    ///
-    /// - Parameter events: `[PaiDateEvent]?`
-    public func populateCalendarEventsWithinMonth(_ events: [PaiDateEvent]?) {
-        guard let monthItem = month, let events = events else {
-            return
+        /// Map events of the particular date, according to collectionView item index.
+        var items: [DailyEventsItem] = []
+        dates.map({ $0.date }).forEach { (date) in
+            let dailyEvents = events.filter({
+                Calendar.autoupdatingCurrent.compare($0.date, to: date, toGranularity: .day) == .orderedSame
+            })
+            let item: DailyEventsItem = (date, dailyEvents)
+            items.append(item)
         }
-
-        let currentMonthNumber: String = (monthItem.month.rawValue + 1).description
-        let currentYear: String = monthItem.year.description
-
-        /// Get all events in this particular month & year.
-        thisMonthEvents = events.filter({ event in
-            /// Filter event of the year.
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy"
-            let yearString: String = formatter.string(from: event.date)
-            return (currentYear == yearString)
-        }).filter({ event in
-            /// Filter event of the month.
-            let formatter = DateFormatter()
-            formatter.dateFormat = "M"
-            let monthNumber: String = formatter.string(from: event.date)
-            return (currentMonthNumber == monthNumber)
-        })
+        dailyEventsItems = items
     }
 }
 
@@ -98,14 +85,8 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
             fatalError("DayViewCell not found.")
         }
 
-        let item = dates[indexPath.item]
-        cell.configure(date: item.date)
-
-        /// Filter event of the particular date, according to collectionView item index.
-        let theDayEvents = thisMonthEvents.filter({
-            Calendar.autoupdatingCurrent.compare($0.date, to: item.date, toGranularity: .day) == .orderedSame
-        })
-        cell.configure(events: theDayEvents)
+        let dateItem = dates[indexPath.item]
+        cell.configure(date: dateItem.date)
 
         /// Configure date item cell by the 3 defined `DateItemStyle` values
         if let beginning = PaiCalendar.current.indexStartDate(inMonth: monthItem), indexPath.item < beginning {
@@ -113,14 +94,19 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
         } else if let end = PaiCalendar.current.indexEndDate(inMonth: monthItem), indexPath.item > end {
             cell.configure(style: .offsetDate)
         } else {
-            if item.isPastDate {
+            if dateItem.isPastDate {
                 cell.configure(style: .pastDate)
-            } else if item.isToday {
+            } else if dateItem.isToday {
                 cell.configure(style: .today)
             } else {
                 cell.configure(style: .insetDate)
             }
         }
+
+        /// Configure events for particular date
+        let eventItem = dailyEventsItems[indexPath.item]
+        cell.configureEvent(item: eventItem)
+
         return cell
     }
 

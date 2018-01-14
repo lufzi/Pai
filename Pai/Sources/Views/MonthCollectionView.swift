@@ -8,23 +8,28 @@
 
 import UIKit
 
+internal typealias MonthlyEventsItem = (month: PaiMonth, events: [PaiDateEvent])
+
 public class MonthCollectionView: UICollectionView {
 
     // MARK: - Public Properties
 
     public var sharedStyle: PaiStyle
     public weak var calendarDelegate: PaiCalendarDelegate?
-    public weak var calendarDataSource: PaiCalendarDataSource?
 
     // MARK: - Private Properties
 
     private var months: [PaiMonth]!
+    private var montlyEventsItems: [MonthlyEventsItem] = [] {
+        didSet {
+            reloadData()
+        }
+    }
 
-    public init(style: PaiStyle, startYear: Int, endYear: Int) {
+    public init(style: PaiStyle, startYear: Int, endYear: Int, calendarDataSource: PaiCalendarDataSource? = nil) {
         /// Set data
         sharedStyle = style
         months = PaiMonth.generatesInYears(from: startYear, to: endYear)
-
         /// Setup UI
         let layout = MonthVerticalFlowLayout()
         super.init(frame: .zero, collectionViewLayout: layout)
@@ -36,6 +41,11 @@ public class MonthCollectionView: UICollectionView {
         dataSource = self
         showsVerticalScrollIndicator = false
         NotificationCenter.default.addObserver(self, selector: #selector(dateDidSelect), name: NSNotification.Name(rawValue: "me.luqmanfauzi.Pai"), object: nil)
+
+        /// Setup date events
+        if let events = calendarDataSource?.calendarDateEvents(in: self) {
+            mapEventsForParticularMonths(events: events)
+        }
 
         /// Scroll to current date if needed
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
@@ -52,6 +62,11 @@ public class MonthCollectionView: UICollectionView {
         super.init(coder: aDecoder)
     }
 
+    // MARK: - Private Methods
+
+    /// Notification center event from tapping day item cell.
+    ///
+    /// - Parameter notification: `Notification` event from NotificationCenter
     @objc private func dateDidSelect(_ notification: Notification) {
         guard let object = notification.object as? (PaiDate, Int) else {
             return
@@ -61,6 +76,39 @@ public class MonthCollectionView: UICollectionView {
         calendarDelegate?.calendarDateDidSelect(in: self, at: index, date: date)
     }
 
+    /// Map all events into particular months
+    ///
+    /// - Parameter events: All `[PaiDateEvent]` events from outside library.
+    private func mapEventsForParticularMonths(events: [PaiDateEvent]) {
+        var items: [MonthlyEventsItem] = []
+        months.forEach { (monthItem) in
+            let currentMonthNumber: String = (monthItem.month.rawValue + 1).description
+            let currentYear: String = monthItem.year.description
+
+            /// Get all events in this particular month & year.
+            let events = events.filter({ event in
+                /// Filter event of the year.
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy"
+                let yearString: String = formatter.string(from: event.date)
+                return (currentYear == yearString)
+            }).filter({ event in
+                /// Filter event of the month.
+                let formatter = DateFormatter()
+                formatter.dateFormat = "M"
+                let monthNumber: String = formatter.string(from: event.date)
+                return (currentMonthNumber == monthNumber)
+            })
+
+            let monthlyEvent: MonthlyEventsItem = (monthItem, events)
+            items.append(monthlyEvent)
+        }
+        montlyEventsItems = items
+    }
+
+    /// Scroll to current month, which contains today.
+    ///
+    /// - Parameter animated: animation effect upon dragging.
     public func scrolltoCurrentMonth(animated: Bool = true) {
         let components = Calendar.autoupdatingCurrent.dateComponents([.year, .month, .day], from: Date())
         let currentMonth = components.month
@@ -93,9 +141,8 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
         guard let cell = collectionView.dequeueReusableCell(withClass: MonthViewCell.self, for: indexPath) else {
             fatalError("DayViewCell not found.")
         }
-        let month = months[indexPath.section]
-        cell.configure(month: month)
-        cell.configure(allCalendarEvents: calendarDataSource?.calendarDateEvents(in: self))
+        let item = montlyEventsItems[indexPath.section]
+        cell.configure(eventsItem: item)
         return cell
     }
 

@@ -23,9 +23,8 @@ final class ExampleViewController: UIViewController, PaiCalendarDelegate, PaiCal
     }()
 
     private lazy var monthlyView: MonthCollectionView = {
-        let view = MonthCollectionView(style: self.style, startYear: 2017, endYear: 2018)
+        let view = MonthCollectionView(style: self.style, startYear: 2017, endYear: 2018, calendarDataSource: self)
         view.calendarDelegate = self
-        view.calendarDataSource = self
         return view
     }()
 
@@ -57,10 +56,10 @@ final class ExampleViewController: UIViewController, PaiCalendarDelegate, PaiCal
         print("Selected date: \(date.date)")
     }
 
-    // MARK: - PaiCalendarDataSource
+    // MARK: - PaiCalendarDataSourc
 
     func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiDateEvent] {
-        let events = PaiDateEvent.generateRandom(numberOfEvents: 3)
+        let events = PaiDateEvent.generateRandom(numberOfEvents: 6)
         return events
     }
 }

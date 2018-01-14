@@ -10,6 +10,8 @@ import UIKit
 
 final class DayViewCell: UICollectionViewCell {
 
+    // MARK: - Private Properties
+
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.font = PaiStyle.shared.dateItemFont
@@ -29,12 +31,32 @@ final class DayViewCell: UICollectionViewCell {
         return layer
     }()
 
+    private lazy var dotsIndicator: UIView = {
+        let view = UIView()
+        view.frame = CGRect(x: 0, y: 0, width: self.bounds.width - 15.0, height: 20.0)
+        for i in 0...2 {
+            let accumulator = CGFloat(i) * 3.5
+            let x = (view.bounds.width * 0.5) - 3.5 + accumulator
+            let frame = CGRect(x: x, y: 1.0, width: 1.5, height: 1.5)
+            let dotPath = UIBezierPath(ovalIn: frame)
+            let layer = CAShapeLayer()
+            layer.path = dotPath.cgPath
+            layer.strokeColor = UIColor.lightGray.cgColor
+            view.layer.addSublayer(layer)
+        }
+        return view
+    }()
+
     private lazy var eventViews: [UIView] = {
         let maxStacks = 6
         var views: [UIView] = []
         for i in 1...maxStacks {
-            let view = UIView()
-            view.backgroundColor = (i == maxStacks) ? .yellow : .clear
+            let view: UIView
+            if i == maxStacks {
+                view = dotsIndicator
+            } else {
+                view = UIView()
+            }
             view.translatesAutoresizingMaskIntoConstraints = false
             view.heightAnchor.constraint(equalToConstant: 3.0).isActive = true
             views.append(view)
@@ -87,17 +109,18 @@ final class DayViewCell: UICollectionViewCell {
         dateLabel.text = formatter.string(from: date)
     }
 
-    public func configure(events: [PaiDateEvent]) {
-        guard PaiStyle.shared.dateItemDisplayEventsIfAny, !(events.isEmpty) else {
+    public func configureEvent(item: DailyEventsItem) {
+        guard PaiStyle.shared.dateItemDisplayEventsIfAny, !(item.events.isEmpty) else {
             eventsStackView.isHidden = true
             return
         }
-        if events.count <= 5 {
+        eventsStackView.isHidden = false
+        if item.events.count <= 5 {
             /// Remove last subview in stackview.
             eventsStackView.removeArrangedSubview(eventsStackView.arrangedSubviews.last!)
             eventViews.last?.removeFromSuperview()
         }
-        for (index, event) in events.enumerated() {
+        for (index, event) in item.events.enumerated() {
             if 0...4 ~= index {
                 /// Within 5 events range
                 eventsStackView.arrangedSubviews[index].backgroundColor = event.tagColor

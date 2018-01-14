@@ -46,17 +46,10 @@ final class MonthViewCell: UICollectionViewCell {
         addSubview(dayCollectionView)
     }
 
-    /// Populates all the dates in particular month & year.
+    /// Configure all events for a single particuar month & year.
     ///
-    /// - Parameter month: `PaiMonth`
-    public func configure(month: PaiMonth) {
-        dayCollectionView.setup(month)
-    }
-
-    /// Receive all calendar events from `PaiCalendarDataSource`.
-    ///
-    /// - Parameter events: list of `[PaiDateEvent]?`
-    public func configure(allCalendarEvents events: [PaiDateEvent]?) {
-        dayCollectionView.populateCalendarEventsWithinMonth(events)
+    /// - Parameter events: `MonthlyEventsItem`, which contains all events in specific month & year.
+    public func configure(eventsItem: MonthlyEventsItem) {
+        dayCollectionView.configure(eventsItem.month, eventsItem.events)
     }
 }
