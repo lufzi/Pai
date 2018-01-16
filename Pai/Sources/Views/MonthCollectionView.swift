@@ -121,7 +121,13 @@ public class MonthCollectionView: UICollectionView {
             return
         }
         let indexPath = IndexPath(item: 0, section: indexTarget)
-        scrollToItem(at: indexPath, at: .bottom, animated: animated)
+        scrollToItem(at: indexPath, at: .top, animated: false)
+        let offsetY = (PaiStyle.shared.monthItemHeaderHeight * 2.5)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            if let cell = self.cellForItem(at: indexPath) {
+                self.setContentOffset(CGPoint(x: 0.0 , y: cell.frame.origin.y - offsetY), animated: false)
+            }
+        }
     }
 }
 
