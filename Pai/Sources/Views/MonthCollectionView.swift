@@ -28,12 +28,21 @@ public class MonthCollectionView: UICollectionView {
     private var mostTopMonth: PaiMonth?
 
     public init(style: PaiStyle, startYear: Int, endYear: Int, calendarDataSource: PaiCalendarDataSource? = nil) {
-        /// Set data
         sharedStyle = style
         months = PaiMonth.generatesInYears(from: startYear, to: endYear)
+        super.init(frame: .zero, collectionViewLayout: MonthVerticalFlowLayout())
+        sharedInit(calendarDataSource: calendarDataSource)
+    }
+
+    public init(style: PaiStyle, backwardsMonths: Int, forwardsMonths: Int, calendarDataSource: PaiCalendarDataSource? = nil) {
+        sharedStyle = style
+        months = PaiMonth.generatesInMonts(backwardsCount: backwardsMonths, forwardsCount: backwardsMonths)
+        super.init(frame: .zero, collectionViewLayout: MonthVerticalFlowLayout())
+        sharedInit(calendarDataSource: calendarDataSource)
+    }
+
+    private func sharedInit(calendarDataSource: PaiCalendarDataSource? = nil) {
         /// Setup UI
-        let layout = MonthVerticalFlowLayout()
-        super.init(frame: .zero, collectionViewLayout: layout)
         register(cellWithClass: MonthViewCell.self)
         register(supplementaryViewOfKind: UICollectionElementKindSectionHeader, withClass: MonthHeaderView.self)
         backgroundColor = UIColor.groupTableViewBackground
@@ -54,13 +63,13 @@ public class MonthCollectionView: UICollectionView {
         }
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     required public init?(coder aDecoder: NSCoder) {
         sharedStyle = PaiStyle.shared
         super.init(coder: aDecoder)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     // MARK: - Private Methods
