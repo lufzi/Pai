@@ -31,6 +31,13 @@ final class ExampleViewController: UIViewController, PaiCalendarDelegate, PaiCal
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        navigationController?.navigationBar.titleTextAttributes = [
+            NSAttributedStringKey.foregroundColor: UIColor.white,
+            NSAttributedStringKey.font: UIFont.systemFont(ofSize: 18.0, weight: .heavy)
+        ]
+        navigationController?.navigationBar.barTintColor = .red
+        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.isTranslucent = false
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Today", style: .done, target: self, action: #selector(didTapToday))
     }
 
