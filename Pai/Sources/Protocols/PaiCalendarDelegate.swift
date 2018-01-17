@@ -32,8 +32,18 @@ public protocol PaiCalendarDelegate: class {
     ///   - index: index of selected date in particular month
     ///   - date: selected `PaiDate` in particular month
     func calendarDateDidSelect(in calendar: MonthCollectionView, at index: Int, date: PaiDate)
+
+    /// Send month string when month cell is currently at top of screen
+    ///
+    /// - Parameters:
+    ///   - calendar: `MonthCollectionView`
+    ///   - index: index of selected month
+    ///   - month: string of selected month
+    ///   - year: string of selected year
+    func calendarMonthViewDidScroll(in calendar: MonthCollectionView, at index: Int, month: String, year: String)
 }
 
 public extension PaiCalendarDelegate {
     func calendarDateDidSelect(in calendar: MonthCollectionView, at index: Int, date: PaiDate) { }
+    func calendarMonthViewDidScroll(in calendar: MonthCollectionView, at index: Int, month: String, year: String) { }
 }

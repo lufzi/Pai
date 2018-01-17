@@ -25,6 +25,7 @@ public class MonthCollectionView: UICollectionView {
             reloadData()
         }
     }
+    private var mostTopMonth: PaiMonth?
 
     public init(style: PaiStyle, startYear: Int, endYear: Int, calendarDataSource: PaiCalendarDataSource? = nil) {
         /// Set data
@@ -121,7 +122,13 @@ public class MonthCollectionView: UICollectionView {
             return
         }
         let indexPath = IndexPath(item: 0, section: indexTarget)
-        scrollToItem(at: indexPath, at: .bottom, animated: animated)
+        scrollToItem(at: indexPath, at: .top, animated: false)
+        let offsetY = (PaiStyle.shared.monthItemHeaderHeight * 2.5)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            if let cell = self.cellForItem(at: indexPath) {
+                self.setContentOffset(CGPoint(x: 0.0 , y: cell.frame.origin.y - offsetY), animated: false)
+            }
+        }
     }
 }
 
@@ -170,5 +177,25 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
         let symbolsHeight: CGFloat = 25.0
         let monthHeight: CGFloat = CGFloat(itemsCountInRow) * dateItemHeight + symbolsHeight
         return CGSize(width: width, height: monthHeight)
+    }
+
+    // MARK: - UIScrollView Delegate
+
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let pointY = scrollView.contentOffset.y + (UIScreen.main.bounds.height * 0.2)
+        let point = CGPoint(x: 0, y: pointY)
+        if let indexPath = indexPathForItem(at: point) {
+            let selectedMonth = months[indexPath.section]
+            if mostTopMonth == nil {
+                mostTopMonth = selectedMonth
+                calendarDelegate?.calendarMonthViewDidScroll(in: self, at: indexPath.section, month: selectedMonth.symbol, year: "\(selectedMonth.year)")
+            } else {
+                let aldyDisplayMonth = mostTopMonth?.month == selectedMonth.month && mostTopMonth?.year == selectedMonth.year
+                if !aldyDisplayMonth {
+                    mostTopMonth = selectedMonth
+                    calendarDelegate?.calendarMonthViewDidScroll(in: self, at: indexPath.section, month: selectedMonth.symbol, year: "\(selectedMonth.year)")
+                }
+            }
+        }
     }
 }

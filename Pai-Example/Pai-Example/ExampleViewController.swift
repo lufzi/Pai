@@ -56,6 +56,10 @@ final class ExampleViewController: UIViewController, PaiCalendarDelegate, PaiCal
         print("Selected date: \(date.date)")
     }
 
+    func calendarMonthViewDidScroll(in calendar: MonthCollectionView, at index: Int, month: String, year: String) {
+        title = month + " " + year
+    }
+
     // MARK: - PaiCalendarDataSourc
 
     func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiDateEvent] {
