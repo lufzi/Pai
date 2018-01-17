@@ -25,6 +25,7 @@ public class MonthCollectionView: UICollectionView {
             reloadData()
         }
     }
+    private var mostTopMonth: PaiMonth?
 
     public init(style: PaiStyle, startYear: Int, endYear: Int, calendarDataSource: PaiCalendarDataSource? = nil) {
         /// Set data
@@ -176,5 +177,25 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
         let symbolsHeight: CGFloat = 25.0
         let monthHeight: CGFloat = CGFloat(itemsCountInRow) * dateItemHeight + symbolsHeight
         return CGSize(width: width, height: monthHeight)
+    }
+
+    // MARK: - UIScrollView Delegate
+
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let pointY = scrollView.contentOffset.y + (UIScreen.main.bounds.height * 0.2)
+        let point = CGPoint(x: 0, y: pointY)
+        if let indexPath = indexPathForItem(at: point) {
+            let selectedMonth = months[indexPath.section]
+            if mostTopMonth == nil {
+                mostTopMonth = selectedMonth
+                calendarDelegate?.calendarMonthViewDidScroll(in: self, at: indexPath.section, month: selectedMonth.symbol, year: "\(selectedMonth.year)")
+            } else {
+                let aldyDisplayMonth = mostTopMonth?.month == selectedMonth.month && mostTopMonth?.year == selectedMonth.year
+                if !aldyDisplayMonth {
+                    mostTopMonth = selectedMonth
+                    calendarDelegate?.calendarMonthViewDidScroll(in: self, at: indexPath.section, month: selectedMonth.symbol, year: "\(selectedMonth.year)")
+                }
+            }
+        }
     }
 }
