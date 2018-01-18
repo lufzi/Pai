@@ -26,6 +26,12 @@ public class MonthCollectionView: UICollectionView {
         }
     }
     private var mostTopMonth: PaiMonth?
+    private var currentlyScrollToCurrentMonth = false
+    private var currentMonthIndex: IndexPath!{
+        didSet{
+            currentlyScrollToCurrentMonth = true
+        }
+    }
 
     public init(style: PaiStyle, startYear: Int, endYear: Int, calendarDataSource: PaiCalendarDataSource? = nil) {
         sharedStyle = style
@@ -59,7 +65,7 @@ public class MonthCollectionView: UICollectionView {
 
         /// Scroll to current date if needed
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.scrolltoCurrentMonth(animated: false)
+            self?.scrolltoCurrentMonth()
         }
     }
 
@@ -119,7 +125,7 @@ public class MonthCollectionView: UICollectionView {
     /// Scroll to current month, which contains today.
     ///
     /// - Parameter animated: animation effect upon dragging.
-    public func scrolltoCurrentMonth(animated: Bool = true) {
+    public func scrolltoCurrentMonth() {
         let components = Calendar.autoupdatingCurrent.dateComponents([.year, .month, .day], from: Date())
         let currentMonth = components.month
         let currentYear = components.year
@@ -131,13 +137,8 @@ public class MonthCollectionView: UICollectionView {
             return
         }
         let indexPath = IndexPath(item: 0, section: indexTarget)
-        scrollToItem(at: indexPath, at: .top, animated: false)
-        let offsetY = (PaiStyle.shared.monthItemHeaderHeight)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            if let cell = self.cellForItem(at: indexPath) {
-                self.setContentOffset(CGPoint(x: 0.0 , y: cell.frame.origin.y - offsetY), animated: false)
-            }
-        }
+        scrollToItem(at: indexPath, at: .top, animated: true)
+        currentMonthIndex = indexPath
     }
 }
 
@@ -191,7 +192,7 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
     // MARK: - UIScrollView Delegate
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let pointY = scrollView.contentOffset.y + (UIScreen.main.bounds.height * 0.2)
+        let pointY = scrollView.contentOffset.y + PaiStyle.shared.monthItemHeaderHeight
         let point = CGPoint(x: 0, y: pointY)
         if let indexPath = indexPathForItem(at: point) {
             let selectedMonth = months[indexPath.section]
@@ -203,6 +204,18 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
                 if !aldyDisplayMonth {
                     mostTopMonth = selectedMonth
                     calendarDelegate?.calendarMonthViewDidScroll(in: self, at: indexPath.section, month: selectedMonth.symbol, year: "\(selectedMonth.year)")
+                }
+            }
+        }
+    }
+
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        if currentlyScrollToCurrentMonth {
+            currentlyScrollToCurrentMonth = false
+            let offsetY = (PaiStyle.shared.monthItemHeaderHeight)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if let cell = self.cellForItem(at: self.currentMonthIndex) {
+                    self.setContentOffset(CGPoint(x: 0.0 , y: cell.frame.origin.y - offsetY), animated: false)
                 }
             }
         }
