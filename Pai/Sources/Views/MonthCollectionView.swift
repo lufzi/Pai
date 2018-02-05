@@ -16,15 +16,12 @@ public class MonthCollectionView: UICollectionView {
 
     public var sharedStyle: PaiStyle
     public weak var calendarDelegate: PaiCalendarDelegate?
+    public weak var calendarDataSource: PaiCalendarDataSource?
 
     // MARK: - Private Properties
 
     private var months: [PaiMonth]!
-    private var montlyEventsItems: [MonthlyEventsItem] = [] {
-        didSet {
-            reloadData()
-        }
-    }
+    private var montlyEventsItems: [MonthlyEventsItem] = []
     private var mostTopMonth: PaiMonth?
     private var currentlyScrollToCurrentMonth = false
     private var currentMonthIndex: IndexPath!{
@@ -60,6 +57,7 @@ public class MonthCollectionView: UICollectionView {
 
         /// Setup date events
         if let events = calendarDataSource?.calendarDateEvents(in: self) {
+            self.calendarDataSource = calendarDataSource
             mapEventsForParticularMonths(events: events)
         }
 
@@ -76,6 +74,12 @@ public class MonthCollectionView: UICollectionView {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+
+    public func reloadEvents() {
+        if let events = calendarDataSource?.calendarDateEvents(in: self) {
+            mapEventsForParticularMonths(events: events)
+        }
     }
 
     // MARK: - Private Methods
@@ -120,6 +124,7 @@ public class MonthCollectionView: UICollectionView {
             items.append(monthlyEvent)
         }
         montlyEventsItems = items
+        reloadData()
     }
 
     /// Scroll to current month, which contains today.
