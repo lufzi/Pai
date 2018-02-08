@@ -96,6 +96,21 @@ public class MonthCollectionView: UICollectionView {
         calendarDelegate?.calendarDateDidSelect(in: self, at: index, date: date)
     }
 
+    /// Send visible months to outside library
+    private func sendVisibleCell() {
+        /// Send back array of current visible month after scrolling
+        var visibleMonthsStr = [String]()
+        for cell in visibleCells {
+            if let indexPath = indexPath(for: cell) {
+                let selectedMonth = months[indexPath.section]
+                let selectedMonthStr = "\(selectedMonth.year)-\(selectedMonth.month.rawValue + 1)-1"
+                visibleMonthsStr.append(selectedMonthStr)
+            }
+        }
+        print(visibleMonthsStr)
+        calendarDelegate?.calendarMonthVisibleMonth(in: self, datesString: visibleMonthsStr)
+    }
+
     /// Map all events into particular months
     ///
     /// - Parameter events: All `[PaiDateEvent]` events from outside library.
@@ -212,6 +227,16 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
                 }
             }
         }
+    }
+
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            sendVisibleCell()
+        }
+    }
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        sendVisibleCell()
     }
 
     public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
