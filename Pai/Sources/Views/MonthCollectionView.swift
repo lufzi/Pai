@@ -103,7 +103,7 @@ public class MonthCollectionView: UICollectionView {
         for cell in visibleCells {
             if let indexPath = indexPath(for: cell) {
                 let selectedMonth = months[indexPath.section]
-                let selectedMonthStr = "\(selectedMonth.year)-\(selectedMonth.month.rawValue + 1)-1"
+                let selectedMonthStr = "\(selectedMonth.year)-\(selectedMonth.month.rawValue + 1)-15"
                 visibleMonthsStr.append(selectedMonthStr)
             }
         }
