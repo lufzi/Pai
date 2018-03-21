@@ -16,6 +16,19 @@ public struct PaiDateEvent {
 
     public let tagColor: UIColor
 
+    public var monthYearStr: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy M"
+        return formatter.string(from: date)
+    }
+
+    public var dateStr: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy M dd"
+        return formatter.string(from: date)
+
+    }
+
     /// Initlizer of the struct
     ///
     /// - Parameters:
@@ -38,3 +51,4 @@ public extension PaiDateEvent {
         return events
     }
 }
+

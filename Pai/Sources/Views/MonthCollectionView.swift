@@ -55,6 +55,11 @@ public class MonthCollectionView: UICollectionView {
         showsVerticalScrollIndicator = false
         NotificationCenter.default.addObserver(self, selector: #selector(dateDidSelect), name: NSNotification.Name(rawValue: "me.luqmanfauzi.Pai"), object: nil)
 
+        /// Initialiaze date events
+        montlyEventsItems = self.months.map({
+            let monthlyEvent: MonthlyEventsItem = ($0, [PaiDateEvent]())
+            return monthlyEvent
+        })
         /// Setup date events
         if let events = calendarDataSource?.calendarDateEvents(in: self) {
             self.calendarDataSource = calendarDataSource
@@ -115,30 +120,13 @@ public class MonthCollectionView: UICollectionView {
     ///
     /// - Parameter events: All `[PaiDateEvent]` events from outside library.
     private func mapEventsForParticularMonths(events: [PaiDateEvent]) {
-        var items: [MonthlyEventsItem] = []
-        months.forEach { (monthItem) in
-            let currentMonthNumber: String = (monthItem.month.rawValue + 1).description
-            let currentYear: String = monthItem.year.description
-
-            /// Get all events in this particular month & year.
-            let events = events.filter({ event in
-                /// Filter event of the year.
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy"
-                let yearString: String = formatter.string(from: event.date)
-                return (currentYear == yearString)
-            }).filter({ event in
-                /// Filter event of the month.
-                let formatter = DateFormatter()
-                formatter.dateFormat = "M"
-                let monthNumber: String = formatter.string(from: event.date)
-                return (currentMonthNumber == monthNumber)
-            })
-
-            let monthlyEvent: MonthlyEventsItem = (monthItem, events)
-            items.append(monthlyEvent)
+        let allEventsMonthYearStr = Set(events.map({$0.monthYearStr}).sorted())
+        allEventsMonthYearStr.forEach { (monthYearStr) in
+            let monthEvents = events.filter({$0.monthYearStr == monthYearStr})
+            if let index = montlyEventsItems.index(where: {"\($0.month.year) \($0.month.month.rawValue + 1)" == monthYearStr}) {
+                montlyEventsItems[index] = (months[index] , monthEvents)
+            }
         }
-        montlyEventsItems = items
         reloadData()
     }
 
@@ -149,14 +137,11 @@ public class MonthCollectionView: UICollectionView {
         let components = Calendar.autoupdatingCurrent.dateComponents([.year, .month, .day], from: Date())
         let currentMonth = components.month
         let currentYear = components.year
-        guard let indexTarget = months.enumerated()
-            .filter({ $0.element.year == currentYear })
-            .filter({ $0.element.month.rawValue + 1 == currentMonth })
-            .first?.offset
-        else {
-            return
-        }
-        let indexPath = IndexPath(item: 0, section: indexTarget)
+        guard
+            let index = months.index(where: { $0.year == currentYear && $0.month.rawValue + 1 == currentMonth })
+            else { return }
+
+        let indexPath = IndexPath(item: 0, section: index)
         scrollToItem(at: indexPath, at: .top, animated: true)
         currentMonthIndex = indexPath
     }
@@ -251,3 +236,4 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
         }
     }
 }
+
