@@ -10,15 +10,15 @@ import Foundation
 
 public protocol PaiCalendarDataSource: class {
 
-    /// List of `[PaiDateEvent]` events to be displayed in calendar
+    /// List of `[PaiMonthEvent]` events to be displayed in calendar
     ///
     /// - Parameter calendar: `MonthCollectionView`
     /// - Returns: list of all events to be displayed in the calendar view
-    func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiDateEvent]
+    func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiMonthEvent]
 }
 
 public extension PaiCalendarDataSource {
-    func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiDateEvent] {
+    func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiMonthEvent] {
         return []
     }
 }
@@ -55,3 +55,4 @@ public extension PaiCalendarDelegate {
     func calendarMonthViewDidScroll(in calendar: MonthCollectionView, at index: Int, month: String, year: String) { }
     func calendarMonthVisibleMonth(in calendar: MonthCollectionView, datesString: [String]) { }
 }
+

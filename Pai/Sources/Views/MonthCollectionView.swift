@@ -8,7 +8,7 @@
 
 import UIKit
 
-internal typealias MonthlyEventsItem = (month: PaiMonth, events: [PaiDateEvent])
+internal typealias MonthlyEventsItem = (month: PaiMonth, events: PaiMonthEvent?)
 
 public class MonthCollectionView: UICollectionView {
 
@@ -57,7 +57,7 @@ public class MonthCollectionView: UICollectionView {
 
         /// Initialiaze date events
         montlyEventsItems = self.months.map({
-            let monthlyEvent: MonthlyEventsItem = ($0, [PaiDateEvent]())
+            let monthlyEvent: MonthlyEventsItem = ($0, nil)
             return monthlyEvent
         })
         /// Setup date events
@@ -118,12 +118,10 @@ public class MonthCollectionView: UICollectionView {
 
     /// Map all events into particular months
     ///
-    /// - Parameter events: All `[PaiDateEvent]` events from outside library.
-    private func mapEventsForParticularMonths(events: [PaiDateEvent]) {
-        let allEventsMonthYearStr = Set(events.map({$0.monthYearStr}).sorted())
-        allEventsMonthYearStr.forEach { (monthYearStr) in
-            let monthEvents = events.filter({$0.monthYearStr == monthYearStr})
-            if let index = montlyEventsItems.index(where: {"\($0.month.year) \($0.month.month.rawValue + 1)" == monthYearStr}) {
+    /// - Parameter events: All `[PaiMonthEvent]` events from outside library.
+    private func mapEventsForParticularMonths(events: [PaiMonthEvent]) {
+        events.forEach { (monthEvents) in
+            if let index = montlyEventsItems.index(where: {"\($0.month.year) \($0.month.month.rawValue + 1)" == monthEvents.monthYearStr}) {
                 montlyEventsItems[index] = (months[index] , monthEvents)
             }
         }
@@ -173,10 +171,10 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
     public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard let headerView = collectionView.dequeueReusableSupplementaryView(ofKind:
             UICollectionElementKindSectionHeader,
-            withClass: MonthHeaderView.self,
-            for: indexPath)
-        else {
-            fatalError("MonthlyHeaderReusableView not found.")
+                                                                               withClass: MonthHeaderView.self,
+                                                                               for: indexPath)
+            else {
+                fatalError("MonthlyHeaderReusableView not found.")
         }
         let month = months[indexPath.section]
         headerView.configure(monthSymbol: month.symbol, year: month.year)

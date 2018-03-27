@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal typealias DailyEventsItem = (date: Date, events: [PaiDateEvent])
+internal typealias DailyEventsItem = (date: Date, event: PaiDateEvent?)
 
 public class DayCollectionView: UICollectionView {
 
@@ -54,25 +54,28 @@ public class DayCollectionView: UICollectionView {
     /// - Parameters:
     ///   - month: `PaiMonth`
     ///   - events: events in particular `PaiMonth`
-    public func configure(_ month: PaiMonth, _ events: [PaiDateEvent]) {
+    public func configure(_ month: PaiMonth, _ events: PaiMonthEvent?) {
         self.month = month
         /// initiate dailyEventsItems
         dailyEventsItems = dates.map({
-            let items: DailyEventsItem = ($0.date, [PaiDateEvent]())
+            let items: DailyEventsItem = ($0.date, nil)
             return items
         })
 
-        let allDateStr = Set(events.map({$0.dateStr}).sorted())
+        guard let events = events else { return }
+
+        let allDateStr = Set(events.monthEvents.map({$0.dateStr}).sorted())
         allDateStr.forEach { (dateStr) in
-            let dayEvents = events.filter({$0.dateStr == dateStr})
+            let dayEvent = events.monthEvents.first(where: {$0.dateStr == dateStr})
             if let index = dailyEventsItems.index(where: {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy M dd"
                 return formatter.string(from: $0.date) == dateStr
             }) {
-                dailyEventsItems[index] = (dates[index].date, dayEvents)
+                dailyEventsItems[index] = (dates[index].date, dayEvent)
             }
         }
+        reloadData()
     }
 }
 

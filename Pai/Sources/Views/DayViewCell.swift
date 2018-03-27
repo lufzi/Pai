@@ -82,7 +82,7 @@ final class DayViewCell: UICollectionViewCell {
                 eventsStackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor),
                 eventsStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
                 eventsStackView.widthAnchor.constraint(equalToConstant: bounds.width - 15.0)
-            ])
+                ])
         }
     }
 
@@ -93,22 +93,22 @@ final class DayViewCell: UICollectionViewCell {
     }
 
     public func configureEvent(item: DailyEventsItem) {
-        guard PaiStyle.shared.dateItemDisplayEventsIfAny, !(item.events.isEmpty) else {
+        guard PaiStyle.shared.dateItemDisplayEventsIfAny, let event = item.event else {
             eventsStackView.isHidden = true
             return
         }
         eventsStackView.isHidden = false
         dotsIndicator.removeFromSuperview()
-        let events = getEventView(events: item.events)
+        let eventView = getEventView(event: event)
         eventsStackView.arrangedSubviews.forEach({eventsStackView.removeArrangedSubview($0)})
-        events.forEach({eventsStackView.addArrangedSubview($0)})
+        eventView.forEach({eventsStackView.addArrangedSubview($0)})
     }
 
-    private func getEventView(events: [PaiDateEvent]) -> [UIView] {
+    private func getEventView(event: PaiDateEvent) -> [UIView] {
         let maxStacks = 6
-        let stacks = events.count
+        let stacks = event.tagColors.count
         var views: [UIView] = []
-        for (index,event) in events.enumerated() {
+        for (index,color) in event.tagColors.enumerated() {
             let view: UIView
             if (index + 1) == maxStacks {
                 view = dotsIndicator
@@ -118,7 +118,7 @@ final class DayViewCell: UICollectionViewCell {
                 return views
             } else {
                 view = UIView()
-                view.backgroundColor = event.tagColor
+                view.backgroundColor = color
                 view.translatesAutoresizingMaskIntoConstraints = false
                 view.heightAnchor.constraint(equalToConstant: 3.0).isActive = true
                 views.append(view)
@@ -155,3 +155,4 @@ final class DayViewCell: UICollectionViewCell {
         }
     }
 }
+
