@@ -12,29 +12,28 @@ public struct PaiDateEvent {
 
     public let date: Date
 
-    public let name: String?
+    public let tagColors: [UIColor]
 
-    public let tagColor: UIColor
+    public var monthYearStr: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy M"
+        return formatter.string(from: date)
+    }
+
+    public var dateStr: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy M dd"
+        return formatter.string(from: date)
+
+    }
 
     /// Initlizer of the struct
     ///
     /// - Parameters:
     ///   - date: `Date` of event
-    ///   - name: optional `String` of event name
-    ///   - tagColor: `UIColor` tag color of event
-    public static func initObject(date: Date, name: String?, tagColor: UIColor) -> PaiDateEvent {
-        return PaiDateEvent(date: date, name: name, tagColor: tagColor)
+    ///   - tagColors: `[UIColor]` array of tag color
+    public static func initObject(date: Date, tagColors: [UIColor]) -> PaiDateEvent {
+        return PaiDateEvent(date: date, tagColors: tagColors)
     }
 }
 
-public extension PaiDateEvent {
-    public static func generateRandom(numberOfEvents: Int) -> [PaiDateEvent] {
-        var events: [PaiDateEvent] = []
-        for i in 1...numberOfEvents {
-            let color: UIColor = (i % 2 == 0) ? .red : .blue
-            let event = PaiDateEvent(date: Date(), name: nil, tagColor: color)
-            events.append(event)
-        }
-        return events
-    }
-}

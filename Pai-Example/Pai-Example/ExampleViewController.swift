@@ -67,10 +67,11 @@ final class ExampleViewController: UIViewController, PaiCalendarDelegate, PaiCal
         title = month + " " + year
     }
 
-    // MARK: - PaiCalendarDataSourc
-
-    func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiDateEvent] {
-        let events = PaiDateEvent.generateRandom(numberOfEvents: 6)
+    // MARK: - PaiCalendarDataSource3
+    func calendarDateEvents(in calendar: MonthCollectionView) -> [PaiMonthEvent] {
+        let events = PaiMonthEvent.generateRandom(numberOfEvents: 6, numberOfDays: 3, monthYearArr: ["2018 3","2018 4","2018 5"])
         return events
+
+
     }
 }

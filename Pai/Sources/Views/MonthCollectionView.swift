@@ -8,7 +8,7 @@
 
 import UIKit
 
-internal typealias MonthlyEventsItem = (month: PaiMonth, events: [PaiDateEvent])
+internal typealias MonthlyEventsItem = (month: PaiMonth, events: PaiMonthEvent?)
 
 public class MonthCollectionView: UICollectionView {
 
@@ -16,15 +16,12 @@ public class MonthCollectionView: UICollectionView {
 
     public var sharedStyle: PaiStyle
     public weak var calendarDelegate: PaiCalendarDelegate?
+    public weak var calendarDataSource: PaiCalendarDataSource?
 
     // MARK: - Private Properties
 
     private var months: [PaiMonth]!
-    private var montlyEventsItems: [MonthlyEventsItem] = [] {
-        didSet {
-            reloadData()
-        }
-    }
+    private var montlyEventsItems: [MonthlyEventsItem] = []
     private var mostTopMonth: PaiMonth?
     private var currentlyScrollToCurrentMonth = false
     private var currentMonthIndex: IndexPath!{
@@ -58,8 +55,14 @@ public class MonthCollectionView: UICollectionView {
         showsVerticalScrollIndicator = false
         NotificationCenter.default.addObserver(self, selector: #selector(dateDidSelect), name: NSNotification.Name(rawValue: "me.luqmanfauzi.Pai"), object: nil)
 
+        /// Initialiaze date events
+        montlyEventsItems = self.months.map({
+            let monthlyEvent: MonthlyEventsItem = ($0, nil)
+            return monthlyEvent
+        })
         /// Setup date events
         if let events = calendarDataSource?.calendarDateEvents(in: self) {
+            self.calendarDataSource = calendarDataSource
             mapEventsForParticularMonths(events: events)
         }
 
@@ -78,6 +81,12 @@ public class MonthCollectionView: UICollectionView {
         NotificationCenter.default.removeObserver(self)
     }
 
+    public func reloadEvents() {
+        if let events = calendarDataSource?.calendarDateEvents(in: self) {
+            mapEventsForParticularMonths(events: events)
+        }
+    }
+
     // MARK: - Private Methods
 
     /// Notification center event from tapping day item cell.
@@ -92,34 +101,31 @@ public class MonthCollectionView: UICollectionView {
         calendarDelegate?.calendarDateDidSelect(in: self, at: index, date: date)
     }
 
+    /// Send visible months to outside library
+    private func sendVisibleCell() {
+        /// Send back array of current visible month after scrolling
+        var visibleMonthsStr = [String]()
+        for cell in visibleCells {
+            if let indexPath = indexPath(for: cell) {
+                let selectedMonth = months[indexPath.section]
+                let selectedMonthStr = "\(selectedMonth.year)-\(selectedMonth.month.rawValue + 1)-15"
+                visibleMonthsStr.append(selectedMonthStr)
+            }
+        }
+        print(visibleMonthsStr)
+        calendarDelegate?.calendarMonthVisibleMonth(in: self, datesString: visibleMonthsStr)
+    }
+
     /// Map all events into particular months
     ///
-    /// - Parameter events: All `[PaiDateEvent]` events from outside library.
-    private func mapEventsForParticularMonths(events: [PaiDateEvent]) {
-        var items: [MonthlyEventsItem] = []
-        months.forEach { (monthItem) in
-            let currentMonthNumber: String = (monthItem.month.rawValue + 1).description
-            let currentYear: String = monthItem.year.description
-
-            /// Get all events in this particular month & year.
-            let events = events.filter({ event in
-                /// Filter event of the year.
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy"
-                let yearString: String = formatter.string(from: event.date)
-                return (currentYear == yearString)
-            }).filter({ event in
-                /// Filter event of the month.
-                let formatter = DateFormatter()
-                formatter.dateFormat = "M"
-                let monthNumber: String = formatter.string(from: event.date)
-                return (currentMonthNumber == monthNumber)
-            })
-
-            let monthlyEvent: MonthlyEventsItem = (monthItem, events)
-            items.append(monthlyEvent)
+    /// - Parameter events: All `[PaiMonthEvent]` events from outside library.
+    private func mapEventsForParticularMonths(events: [PaiMonthEvent]) {
+        events.forEach { (monthEvents) in
+            if let index = montlyEventsItems.index(where: {"\($0.month.year) \($0.month.month.rawValue + 1)" == monthEvents.monthYearStr}) {
+                montlyEventsItems[index] = (months[index] , monthEvents)
+            }
         }
-        montlyEventsItems = items
+        reloadData()
     }
 
     /// Scroll to current month, which contains today.
@@ -129,14 +135,11 @@ public class MonthCollectionView: UICollectionView {
         let components = Calendar.autoupdatingCurrent.dateComponents([.year, .month, .day], from: Date())
         let currentMonth = components.month
         let currentYear = components.year
-        guard let indexTarget = months.enumerated()
-            .filter({ $0.element.year == currentYear })
-            .filter({ $0.element.month.rawValue + 1 == currentMonth })
-            .first?.offset
-        else {
-            return
-        }
-        let indexPath = IndexPath(item: 0, section: indexTarget)
+        guard
+            let index = months.index(where: { $0.year == currentYear && $0.month.rawValue + 1 == currentMonth })
+            else { return }
+
+        let indexPath = IndexPath(item: 0, section: index)
         scrollToItem(at: indexPath, at: .top, animated: true)
         currentMonthIndex = indexPath
     }
@@ -168,10 +171,10 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
     public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard let headerView = collectionView.dequeueReusableSupplementaryView(ofKind:
             UICollectionElementKindSectionHeader,
-            withClass: MonthHeaderView.self,
-            for: indexPath)
-        else {
-            fatalError("MonthlyHeaderReusableView not found.")
+                                                                               withClass: MonthHeaderView.self,
+                                                                               for: indexPath)
+            else {
+                fatalError("MonthlyHeaderReusableView not found.")
         }
         let month = months[indexPath.section]
         headerView.configure(monthSymbol: month.symbol, year: month.year)
@@ -209,6 +212,16 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
         }
     }
 
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            sendVisibleCell()
+        }
+    }
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        sendVisibleCell()
+    }
+
     public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         if currentlyScrollToCurrentMonth {
             currentlyScrollToCurrentMonth = false
@@ -221,3 +234,4 @@ extension MonthCollectionView: UICollectionViewDataSource, UICollectionViewDeleg
         }
     }
 }
+

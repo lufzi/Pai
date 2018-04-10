@@ -47,25 +47,8 @@ final class DayViewCell: UICollectionViewCell {
         return view
     }()
 
-    private lazy var eventViews: [UIView] = {
-        let maxStacks = 6
-        var views: [UIView] = []
-        for i in 1...maxStacks {
-            let view: UIView
-            if i == maxStacks {
-                view = dotsIndicator
-            } else {
-                view = UIView()
-            }
-            view.translatesAutoresizingMaskIntoConstraints = false
-            view.heightAnchor.constraint(equalToConstant: 3.0).isActive = true
-            views.append(view)
-        }
-        return views
-    }()
-
     private lazy var eventsStackView: UIStackView = {
-        let view = UIStackView(arrangedSubviews: self.eventViews)
+        let view = UIStackView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.axis = .vertical
         view.isBaselineRelativeArrangement = true
@@ -99,7 +82,7 @@ final class DayViewCell: UICollectionViewCell {
                 eventsStackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor),
                 eventsStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
                 eventsStackView.widthAnchor.constraint(equalToConstant: bounds.width - 15.0)
-            ])
+                ])
         }
     }
 
@@ -110,24 +93,38 @@ final class DayViewCell: UICollectionViewCell {
     }
 
     public func configureEvent(item: DailyEventsItem) {
-        guard PaiStyle.shared.dateItemDisplayEventsIfAny, !(item.events.isEmpty) else {
+        guard PaiStyle.shared.dateItemDisplayEventsIfAny, let event = item.event else {
             eventsStackView.isHidden = true
             return
         }
         eventsStackView.isHidden = false
-        if item.events.count <= 5 {
-            /// Remove last subview in stackview.
-            eventsStackView.removeArrangedSubview(eventsStackView.arrangedSubviews.last!)
-            eventViews.last?.removeFromSuperview()
-        }
-        for (index, event) in item.events.enumerated() {
-            if 0...4 ~= index {
-                /// Within 5 events range
-                eventsStackView.arrangedSubviews[index].backgroundColor = event.tagColor
+        dotsIndicator.removeFromSuperview()
+        let eventView = getEventView(event: event)
+        eventsStackView.arrangedSubviews.forEach({eventsStackView.removeArrangedSubview($0)})
+        eventView.forEach({eventsStackView.addArrangedSubview($0)})
+    }
+
+    private func getEventView(event: PaiDateEvent) -> [UIView] {
+        let maxStacks = 6
+        let stacks = event.tagColors.count
+        var views: [UIView] = []
+        for (index,color) in event.tagColors.enumerated() {
+            let view: UIView
+            if (index + 1) == maxStacks {
+                view = dotsIndicator
+                view.translatesAutoresizingMaskIntoConstraints = false
+                view.heightAnchor.constraint(equalToConstant: 3.0).isActive = true
+                views.append(view)
+                return views
             } else {
-                break
+                view = UIView()
+                view.backgroundColor = color
+                view.translatesAutoresizingMaskIntoConstraints = false
+                view.heightAnchor.constraint(equalToConstant: 3.0).isActive = true
+                views.append(view)
             }
         }
+        return views
     }
 
     public func configure(style: DateItemStyle) {
@@ -158,3 +155,4 @@ final class DayViewCell: UICollectionViewCell {
         }
     }
 }
+

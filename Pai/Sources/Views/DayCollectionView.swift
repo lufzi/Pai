@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal typealias DailyEventsItem = (date: Date, events: [PaiDateEvent])
+internal typealias DailyEventsItem = (date: Date, event: PaiDateEvent?)
 
 public class DayCollectionView: UICollectionView {
 
@@ -54,18 +54,28 @@ public class DayCollectionView: UICollectionView {
     /// - Parameters:
     ///   - month: `PaiMonth`
     ///   - events: events in particular `PaiMonth`
-    public func configure(_ month: PaiMonth, _ events: [PaiDateEvent]) {
+    public func configure(_ month: PaiMonth, _ events: PaiMonthEvent?) {
         self.month = month
-        /// Map events of the particular date, according to collectionView item index.
-        var items: [DailyEventsItem] = []
-        dates.map({ $0.date }).forEach { (date) in
-            let dailyEvents = events.filter({
-                Calendar.autoupdatingCurrent.compare($0.date, to: date, toGranularity: .day) == .orderedSame
-            })
-            let item: DailyEventsItem = (date, dailyEvents)
-            items.append(item)
+        /// initiate dailyEventsItems
+        dailyEventsItems = dates.map({
+            let items: DailyEventsItem = ($0.date, nil)
+            return items
+        })
+
+        guard let events = events else { return }
+
+        let allDateStr = Set(events.monthEvents.map({$0.dateStr}).sorted())
+        allDateStr.forEach { (dateStr) in
+            let dayEvent = events.monthEvents.first(where: {$0.dateStr == dateStr})
+            if let index = dailyEventsItems.index(where: {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy M dd"
+                return formatter.string(from: $0.date) == dateStr
+            }) {
+                dailyEventsItems[index] = (dates[index].date, dayEvent)
+            }
         }
-        dailyEventsItems = items
+        reloadData()
     }
 }
 
@@ -81,8 +91,8 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
         guard
             let cell = collectionView.dequeueReusableCell(withClass: DayViewCell.self, for: indexPath),
             let monthItem = month
-        else {
-            fatalError("DayViewCell not found.")
+            else {
+                fatalError("DayViewCell not found.")
         }
 
         let dateItem = dates[indexPath.item]
@@ -127,3 +137,4 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
         return CGSize(width: itemWidth, height: itemHeight)
     }
 }
+
