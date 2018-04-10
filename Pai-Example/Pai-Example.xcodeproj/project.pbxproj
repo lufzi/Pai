@@ -246,7 +246,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
 				LastUpgradeCheck = 0920;
-				ORGANIZATIONNAME = "Luqman Fauzi";
+				ORGANIZATIONNAME = Kaodim;
 				TargetAttributes = {
 					D588F2831FEBF54000AEE201 = {
 						CreatedOnToolsVersion = 9.2;
@@ -638,7 +638,7 @@
 				DEVELOPMENT_TEAM = R2XF3NYPAG;
 				INFOPLIST_FILE = "Pai-Example/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "me.luqmanfauzi.Pai-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kaodim.pai-example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -654,7 +654,7 @@
 				DEVELOPMENT_TEAM = R2XF3NYPAG;
 				INFOPLIST_FILE = "Pai-Example/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "me.luqmanfauzi.Pai-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kaodim.pai-example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

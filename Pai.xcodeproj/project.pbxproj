@@ -13,6 +13,7 @@
 		D588F2691FEBF48C00AEE201 /* Pai.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D588F25F1FEBF48C00AEE201 /* Pai.framework */; };
 		D588F26E1FEBF48C00AEE201 /* PaiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D588F26D1FEBF48C00AEE201 /* PaiTests.swift */; };
 		D588F2701FEBF48C00AEE201 /* Pai.h in Headers */ = {isa = PBXBuildFile; fileRef = D588F2621FEBF48C00AEE201 /* Pai.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D59A40C0207C5E1D00F6B3A2 /* PaiMonthEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59A40BF207C5E1C00F6B3A2 /* PaiMonthEvent.swift */; };
 		D5A0EB682007DA9E00CC4A2E /* PaiDateEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A0EB672007DA9E00CC4A2E /* PaiDateEvent.swift */; };
 		D5D3AD8B2006F113002C74E4 /* UICollectionView+Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D3AD8A2006F113002C74E4 /* UICollectionView+Custom.swift */; };
 		D5D3AD9220071787002C74E4 /* PaiCalendarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D3AD9120071787002C74E4 /* PaiCalendarDelegate.swift */; };
@@ -46,6 +47,7 @@
 		D588F2681FEBF48C00AEE201 /* PaiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PaiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D588F26D1FEBF48C00AEE201 /* PaiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaiTests.swift; sourceTree = "<group>"; };
 		D588F26F1FEBF48C00AEE201 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D59A40BF207C5E1C00F6B3A2 /* PaiMonthEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PaiMonthEvent.swift; path = Pai/Sources/Models/PaiMonthEvent.swift; sourceTree = SOURCE_ROOT; };
 		D5A0EB672007DA9E00CC4A2E /* PaiDateEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaiDateEvent.swift; sourceTree = "<group>"; };
 		D5D3AD8A2006F113002C74E4 /* UICollectionView+Custom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Custom.swift"; sourceTree = "<group>"; };
 		D5D3AD9120071787002C74E4 /* PaiCalendarDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaiCalendarDelegate.swift; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 				D5D3AD93200756B1002C74E4 /* PaiMonth.swift */,
 				D5D3AD95200756F8002C74E4 /* PaiDate.swift */,
 				D5A0EB672007DA9E00CC4A2E /* PaiDateEvent.swift */,
+				D59A40BF207C5E1C00F6B3A2 /* PaiMonthEvent.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -243,7 +246,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
 				LastUpgradeCheck = 0920;
-				ORGANIZATIONNAME = "Luqman Fauzi";
+				ORGANIZATIONNAME = Kaodim;
 				TargetAttributes = {
 					D588F25E1FEBF48C00AEE201 = {
 						CreatedOnToolsVersion = 9.2;
@@ -323,6 +326,7 @@
 				D5E3FCE51FF28CF90059433E /* MonthHeaderView.swift in Sources */,
 				D54FC8EF1FECA8FD00EC148D /* MonthCollectionView.swift in Sources */,
 				D5D3AD9220071787002C74E4 /* PaiCalendarDelegate.swift in Sources */,
+				D59A40C0207C5E1D00F6B3A2 /* PaiMonthEvent.swift in Sources */,
 				D5D3AD8B2006F113002C74E4 /* UICollectionView+Custom.swift in Sources */,
 				D5E3FCF11FF2BBFA0059433E /* DayCollectionView.swift in Sources */,
 				D54FC8F61FECB04E00EC148D /* DayViewCell.swift in Sources */,
@@ -475,7 +479,7 @@
 				INFOPLIST_FILE = "Pai/Supporting Files/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = me.luqmanfauzi.Pai;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kaodim.pai;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -498,7 +502,7 @@
 				INFOPLIST_FILE = "Pai/Supporting Files/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = me.luqmanfauzi.Pai;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kaodim.pai;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.0;
