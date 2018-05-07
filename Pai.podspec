@@ -1,14 +1,13 @@
 Pod::Spec.new do |s|
   s.name = 'Pai'
-  s.version = '0.0.1'
+  s.version = '0.2.1'
   s.license = { :type => "MIT", :file => "LICENSE.md" }
 
   s.summary = 'Calendar view library for iOS.'
-  s.homepage = 'https://github.com/lkmfz/Pai'
-  s.social_media_url = 'https://twitter.com/lkmfz'
-  s.author = { "Luqman Fauzi" => "luckman.fauzi@gmail.com" }
+  s.homepage = 'https://github.com/kaodim/Pai'
+  s.author = { "Kaodim" => "tech@kaodim.com" }
 
-  s.source = { :git => 'https://github.com/lkmfz/Pai.git', :tag => s.version }
+  s.source = { :git => 'https://github.com/kaodim/Pai.git', :tag => s.version }
   s.source_files = 'Pai/Sources/**/*.swift'
 
   s.pod_target_xcconfig = {
