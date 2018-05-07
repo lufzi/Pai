@@ -76,7 +76,7 @@ public extension PaiMonth {
         for year in firstYear...lastYear {
             if year == firstYear {
                 /// Left edge year
-                let months: [PaiMonth] = Array(firstMonthOrdinaly...monthSymbols.count).enumerated().flatMap({
+                let months: [PaiMonth] = Array(firstMonthOrdinaly...monthSymbols.count).enumerated().compactMap({
                     let index = $0.element - 1
                     let month = Month(rawValue: index)!
                     let symbol = monthSymbols[index]
@@ -86,7 +86,7 @@ public extension PaiMonth {
                 monthsInYears.append(contentsOf: months)
             } else if year == lastYear {
                 /// Right edge year
-                let months: [PaiMonth] = Array(1...lastMonthOrdinaly).enumerated().flatMap({
+                let months: [PaiMonth] = Array(1...lastMonthOrdinaly).enumerated().compactMap({
                     let index = $0.element - 1
                     let month = Month(rawValue: index)!
                     let symbol = monthSymbols[index]
@@ -95,7 +95,7 @@ public extension PaiMonth {
                 })
                 monthsInYears.append(contentsOf: months)
             } else {
-                let months: [PaiMonth] = monthSymbols.enumerated().flatMap({
+                let months: [PaiMonth] = monthSymbols.enumerated().compactMap({
                     let month = Month(rawValue: $0.offset)!
                     let paiMonth = PaiMonth(year: year, symbol: $0.element, month: month)
                     return paiMonth

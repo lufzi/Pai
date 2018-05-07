@@ -112,7 +112,6 @@ public class MonthCollectionView: UICollectionView {
                 visibleMonthsStr.append(selectedMonthStr)
             }
         }
-        print(visibleMonthsStr)
         calendarDelegate?.calendarMonthVisibleMonth(in: self, datesString: visibleMonthsStr)
     }
 

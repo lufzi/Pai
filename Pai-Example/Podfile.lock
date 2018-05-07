@@ -1,5 +1,5 @@
 PODS:
-  - Pai (0.1.0)
+  - Pai (0.2.0)
 
 DEPENDENCIES:
   - Pai (from `../`)
@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  Pai: 5bc90c0dd19da9faf2bae514e2b75909b9fdde26
+  Pai: 94073720115fd0121549bec0b48a21520fcda6d5
 
 PODFILE CHECKSUM: b2f25666c2d0afccc931dbd6c838c61a7bf216f7
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.3.1

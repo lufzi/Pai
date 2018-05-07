@@ -13,7 +13,7 @@ public class PaiCalendar {
     public static let current = PaiCalendar()
     private init() { }
 
-    private let calendar = Calendar.autoupdatingCurrent
+    private var calendar = Calendar.autoupdatingCurrent
     private let today = Date()
 
     public var shortMonthSymbols: [String] {
@@ -34,12 +34,10 @@ public extension PaiCalendar {
     /// - Parameter month: `PaiMonth` which contains month & year values.
     /// - Returns: list of `[PaiDate]` of given month & year.
     public func datesCountInMonth(inMonth month: PaiMonth) -> [PaiDate] {
-        guard let startIndex = indexStartDate(inMonth: month) else {
-            fatalError("Index not found")
-        }
+        let startIndex = indexStartDate(inMonth: month)
         let date = startDate(inMonth: month)
         let count = numberOfItemMonthCells(inMonth: month)
-        let dates: [PaiDate] = (0..<count).flatMap { index in
+        let dates: [PaiDate] = (0..<count).compactMap { index in
             var components = DateComponents()
             components.day = index - startIndex
             return calendar.date(byAdding: components, to: date)
@@ -79,12 +77,10 @@ public extension PaiCalendar {
     /// In order to set the date month opening 'edge' date of the month.
     /// - Parameter month: `PaiMonth` which contains month & year values.
     /// - Returns: `Int` index value of the first date of particular onth & year values.
-    public func indexStartDate(inMonth month: PaiMonth) -> Int? {
+    public func indexStartDate(inMonth month: PaiMonth) -> Int {
         let date = startDate(inMonth: month)
-        if let index = calendar.ordinality(of: .day, in: .weekOfMonth, for: date) {
-            return index - 1
-        }
-        return nil
+        let index = calendar.component(.weekday, from: date)
+        return index - 1
     }
 
     /// Get the index value of last `Date` of particular month & year in the `MonthViewCell` content / `[DayViewCell]`.
@@ -94,9 +90,9 @@ public extension PaiCalendar {
     public func indexEndDate(inMonth month: PaiMonth) -> Int? {
         let date = startDate(inMonth: month)
         let startIndex = indexStartDate(inMonth: month)
-        if let rangeDays = calendar.range(of: .day, in: .month, for: date), let beginning = startIndex {
+        if let rangeDays = calendar.range(of: .day, in: .month, for: date) {
             let count = rangeDays.upperBound - rangeDays.lowerBound
-            return count + beginning - 1
+            return count + startIndex - 1
         }
         return nil
     }

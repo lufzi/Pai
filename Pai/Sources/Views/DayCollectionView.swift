@@ -99,7 +99,8 @@ extension DayCollectionView: UICollectionViewDataSource, UICollectionViewDelegat
         cell.configure(date: dateItem.date)
 
         /// Configure date item cell by the 3 defined `DateItemStyle` values
-        if let beginning = PaiCalendar.current.indexStartDate(inMonth: monthItem), indexPath.item < beginning {
+        let beginning = PaiCalendar.current.indexStartDate(inMonth: monthItem)
+        if indexPath.item < beginning {
             cell.configure(style: .offsetDate)
         } else if let end = PaiCalendar.current.indexEndDate(inMonth: monthItem), indexPath.item > end {
             cell.configure(style: .offsetDate)
